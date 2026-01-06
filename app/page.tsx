@@ -257,6 +257,75 @@ export default function HydroScanWebsite() {
           />
         </div>
       </section>
+      <section className="max-w-5xl mx-auto px-6 pb-20">
+  <h2 className="text-4xl font-bold text-center mb-10">
+    Effects of Microplastics
+  </h2>
+
+  <div className="grid md:grid-cols-2 gap-8 text-lg">
+    <div className="p-6 rounded-xl bg-white/5 border border-white/10">
+      <h3 className="text-xl font-semibold mb-3">
+        Human Health Impacts
+      </h3>
+      <ul className="list-disc list-inside text-gray-300 space-y-2">
+        <li>Microplastics can enter the human body through drinking water and food.</li>
+        <li>They may carry toxic chemicals and heavy metals.</li>
+        <li>Studies suggest potential links to inflammation, cellular stress, and hormonal disruption.</li>
+      </ul>
+    </div>
+
+    <div className="p-6 rounded-xl bg-white/5 border border-white/10">
+      <h3 className="text-xl font-semibold mb-3">
+        Environmental Impacts
+      </h3>
+      <ul className="list-disc list-inside text-gray-300 space-y-2">
+        <li>Aquatic organisms ingest microplastics, affecting growth and reproduction.</li>
+        <li>Microplastics accumulate through the food chain.</li>
+        <li>They alter ecosystems and reduce overall water quality.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+      <section className="max-w-5xl mx-auto px-6 py-20">
+  <h2 className="text-4xl font-bold text-center mb-10">
+    Microplastic Levels
+  </h2>
+
+  <div className="space-y-6 text-lg">
+    <div className="p-6 rounded-xl bg-green-500/10 border border-green-500">
+      <p className="text-green-400 font-semibold">
+        Low Contamination
+      </p>
+      <p className="text-white">
+        0 to 50 microplastic particles per litre — generally considered low risk,
+        typically observed in treated or minimally impacted water sources.
+      </p>
+    </div>
+
+    <div className="p-6 rounded-xl bg-yellow-500/10 border border-yellow-500">
+      <p className="text-yellow-400 font-semibold">
+        Medium Contamination
+      </p>
+      <p className="text-white">
+        50 to 500 microplastic particles per litre — indicates significant
+        contamination, often found in urban, river, or industrially influenced
+        water bodies.
+      </p>
+    </div>
+
+    <div className="p-6 rounded-xl bg-red-500/10 border border-red-500">
+      <p className="text-red-400 font-semibold">
+        High Contamination
+      </p>
+      <p className="text-white">
+        More than 500 microplastic particles per litre — represents severe
+        pollution and potential ecological and human health risks.
+      </p>
+    </div>
+  </div>
+</section>
+
 
       {/* Core Capabilities */}
       <section className="px-8 py-32 bg-black">
