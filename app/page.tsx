@@ -263,7 +263,7 @@ export default function HydroScanWebsite() {
   </h2>
 
   <div className="grid md:grid-cols-2 gap-8 text-lg">
-    <div className="bg-slate-800/90 backdrop-blur-xl shadow-xl border border-white/10 transition-all duration-300 hover:-translate-y-2 hover:shadow-cyan-500/20">
+    <div className="p-8 rounded-xl bg-slate-800/90 backdrop-blur-xl shadow-xl border border-white/10 transition-all duration-300 hover:-translate-y-2 hover:shadow-cyan-500/20">
       <h3 className="text-xl font-semibold mb-3">
         Human Health Impacts
       </h3>
@@ -274,7 +274,7 @@ export default function HydroScanWebsite() {
       </ul>
     </div>
 
-    <div className="bg-slate-800/90 backdrop-blur-xl shadow-xl border border-white/10 transition-all duration-300 hover:-translate-y-2 hover:shadow-cyan-500/20">
+    <div className="p-8 rounded-xl bg-slate-800/90 backdrop-blur-xl shadow-xl border border-white/10 transition-all duration-300 hover:-translate-y-2 hover:shadow-cyan-500/20">
       <h3 className="text-xl font-semibold mb-3">
         Environmental Impacts
       </h3>
