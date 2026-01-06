@@ -186,6 +186,72 @@ export default function HydroScanWebsite() {
       </div>
     );
   }
+/* ================= TEAM PAGE ================= */
+if (page === "team") {
+  return (
+    <div className="min-h-screen bg-black text-white">
+      <section className="relative px-8 py-32 text-center overflow-hidden">
+        <div className="relative z-10 max-w-5xl mx-auto">
+          <Button
+            variant="ghost"
+            onClick={() => setPage("home")}
+            className="mb-10 text-slate-300 hover:text-cyan-400"
+          >
+            ← Back
+          </Button>
+
+          <h1 className="text-5xl md:text-6xl font-bold mb-8">
+            The Team
+          </h1>
+          <p className="text-xl text-slate-300 max-w-3xl mx-auto">
+            The people behind HydroScan, combining engineering, science,
+            and a shared commitment to tackling invisible pollution.
+          </p>
+        </div>
+      </section>
+
+      <section className="px-8 py-32 bg-black">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12">
+          
+          {/* Anay */}
+          <div className="p-8 rounded-xl bg-slate-800/90 backdrop-blur-xl shadow-xl border border-white/10">
+            <h3 className="text-2xl font-semibold text-cyan-400 mb-2">
+              Anay Mehta
+            </h3>
+            <p className="text-slate-300 leading-relaxed">
+              Co-founder of HydroScan, Anay focuses on the engineering,
+              optics, and machine learning behind the device. With a strong
+              interest in applied science and real-world problem solving,
+              he works on designing the optical system, building the
+              physical prototype, and developing on-device intelligence
+              to detect microplastics without laboratory testing.
+            </p>
+          </div>
+
+          {/* Yuvraj */}
+          <div className="p-8 rounded-xl bg-slate-800/90 backdrop-blur-xl shadow-xl border border-white/10">
+            <h3 className="text-2xl font-semibold text-cyan-400 mb-2">
+              Yuvraj
+            </h3>
+            <p className="text-slate-300 leading-relaxed">
+              Co-founder of HydroScan, Yuvraj leads hardware integration
+              and system design. He focuses on assembling the device,
+              ensuring reliability in real-world conditions, and
+              translating the concept into a functional, field-ready
+              prototype that can be used outside traditional laboratory
+              environments.
+            </p>
+          </div>
+
+        </div>
+      </section>
+
+      <footer className="px-8 py-16 text-center text-slate-400 bg-black">
+        © {new Date().getFullYear()} HydroScan · Built for a cleaner future
+      </footer>
+    </div>
+  );
+}
 
   /* ================= HOME PAGE ================= */
   return (
@@ -209,21 +275,27 @@ export default function HydroScanWebsite() {
             Revealing invisible microplastic pollution through portable, on-site intelligence.
           </p>
           <div className="flex justify-center gap-6 flex-wrap">
-            <Button
-              onClick={() => setPage("innovation")}
-              className="text-lg px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold"
-            >
-              The Tech
-            </Button>
-            <Button
-              onClick={() => setPage("business")}
-              className="text-lg px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold"
-            >
-              Business Model
-            </Button>
-          </div>
-        </div>
-      </section>
+  <Button
+    onClick={() => setPage("innovation")}
+    className="text-lg px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold"
+  >
+    The Tech
+  </Button>
+
+  <Button
+    onClick={() => setPage("business")}
+    className="text-lg px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold"
+  >
+    Business Model
+  </Button>
+
+  <Button
+    onClick={() => setPage("team")}
+    className="text-lg px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold"
+  >
+    The Team
+  </Button>
+</div>
 
       {/* Story Section */}
       <section className="px-8 py-32 bg-black">
