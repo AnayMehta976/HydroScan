@@ -341,10 +341,9 @@ export default function HydroScanWebsite() {
         <div className="max-w-5xl mx-auto text-center">
           <h2 className="text-4xl font-semibold mb-8">Our Brand</h2>
           <p className="text-slate-300 text-lg leading-relaxed">
-            HydroScan represents clarity, trust, and scientific responsibility.
-            Our visual identity uses deep blues and cyan accents inspired by water
-            and technology, while our voice emphasizes transparency, accessibility,
-            and impact-driven innovation.
+           Our visual identity is inspired by water and technology. Deep blacks and slate tones reflect the seriousness of the environmental challenge, while cyan and blue accents symbolize clarity, precision, and clean water. The design is intentionally minimal and modern, allowing the science and impact to remain at the forefront without distraction.
+HydroScan’s voice is clear, evidence-driven, and accessible. We communicate with transparency and accuracy, avoiding unnecessary complexity while maintaining scientific credibility. Whether addressing students, communities, researchers, or decision-makers, our messaging emphasizes awareness, empowerment, and real-world impact.
+At its core, the HydroScan brand stands for democratizing environmental monitoring. By removing barriers such as laboratory dependence, high costs, and technical inaccessibility, we aim to give communities the tools they need to understand water quality and take informed action. HydroScan is not just a device—it is a commitment to visibility, accountability, and a cleaner future.
           </p>
         </div>
       </section>
