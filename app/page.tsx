@@ -466,27 +466,7 @@ if (page === "team") {
         </div>
       </section>
 
-      {/* Team */}
-      <section className="px-8 py-32 bg-black">
-        <div className="max-w-5xl mx-auto text-center">
-          <h2 className="text-4xl font-semibold mb-14">Meet the Team</h2>
-          <div className="grid md:grid-cols-2 gap-10">
-            <Card className="bg-slate-900/80 backdrop-blur-xl border border-cyan-400/30 shadow-2xl">
-              <CardContent className="p-10">
-                <h3 className="text-2xl font-bold text-cyan-400 mb-2">Anay Mehta</h3>
-                <p className="text-slate-300">Co-founder · Engineering & AI</p>
-              </CardContent>
-            </Card>
-            <Card className="bg-slate-900/80 backdrop-blur-xl border border-cyan-400/30 shadow-2xl">
-              <CardContent className="p-10">
-                <h3 className="text-2xl font-bold text-cyan-400 mb-2">Yuvraj</h3>
-                <p className="text-slate-300">Co-founder · Hardware & Systems</p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
+      
       <footer className="px-8 py-16 text-center text-slate-400 bg-black">
         © {new Date().getFullYear()} HydroScan · Built for a cleaner future
       </footer>
