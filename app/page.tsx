@@ -213,7 +213,7 @@ if (page === "innovation") {
         </div>
       </section>
 
-      {/* Physical Prototype */}
+      {/* Physical Prototype */} 
       <section className="px-8 py-32 bg-black">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-4xl font-semibold text-center mb-16">
@@ -253,7 +253,7 @@ if (page === "innovation") {
 
 
   /* ================= HOME PAGE ================= */
- return (
+  return (
   <div className="min-h-screen bg-black text-white">
 
     {/* Hero Section */}
