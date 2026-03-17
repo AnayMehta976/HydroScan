@@ -6,7 +6,8 @@
 
 > Conrad Challenge 2025–26 | Anay Mehta & Yuvraj Nikum
 
-[![Watch the Demo](https://img.shields.io/badge/Watch%20Demo-YouTube-red?style=flat&logo=youtube)](https://www.youtube.com/watch?v=5f7OmmbQsqY)
+[![Watch the Demo](https://img.shields.io/badge/Watch%20Demo-YouTube-red?style=flat&logo=youtube)]
+[![Live Site](https://img.shields.io/badge/Live%20Site-hydro--scan--six.vercel.app-blue?style=flat&logo=vercel)](https://hydro-scan-six.vercel.app/)(https://www.youtube.com/watch?v=5f7OmmbQsqY)
 
 ---
 
