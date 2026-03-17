@@ -6,8 +6,7 @@
 
 > Conrad Challenge 2025–26 | Anay Mehta & Yuvraj Nikum
 
-[![Watch the Demo](https://img.shields.io/badge/Watch%20Demo-YouTube-red?style=flat&logo=youtube)]
-[![Live Site](https://img.shields.io/badge/Live%20Site-hydro--scan--six.vercel.app-blue?style=flat&logo=vercel)](https://hydro-scan-six.vercel.app/)(https://www.youtube.com/watch?v=5f7OmmbQsqY)
+[![Live Site](https://img.shields.io/badge/Live%20Site-hydro--scan--six.vercel.app-blue?style=flat&logo=vercel)](https://hydro-scan-six.vercel.app/) [![Watch the Demo](https://img.shields.io/badge/Watch%20Demo-YouTube-red?style=flat&logo=youtube)](https://www.youtube.com/watch?v=5f7OmmbQsqY)
 
 ---
 
@@ -36,9 +35,9 @@ HydroScan enables rapid, on-site microplastic screening using controlled optical
 
 | Category | Concentration | Scattering Pattern |
 |----------|--------------|--------------------|
-| 🟢 Low | 0–50 particles / L | Minimal scattering |
-| 🟡 Medium | 50–500 particles / L | Clearly detectable, sparse scattering |
-| 🔴 High | > 500 particles / L | Dense, high-intensity scattering |
+| Low | 0–50 particles / L | Minimal scattering |
+| Medium | 50–500 particles / L | Clearly detectable, sparse scattering |
+| High | > 500 particles / L | Dense, high-intensity scattering |
 
 Results are intuitive and decision-ready — no technical training required to interpret them.
 
