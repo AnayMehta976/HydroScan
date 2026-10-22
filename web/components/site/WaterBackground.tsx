@@ -31,6 +31,9 @@ export default function WaterBackground() {
     if (!ctx) return;
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // Phones and touch devices: draw at ~30fps so the glass panels above stay smooth.
+    const lowPower = window.matchMedia("(max-width: 767px), (pointer: coarse)").matches;
+    const frameMs = lowPower ? 33 : 0;
     let w = 0;
     let h = 0;
     let dpr = 1;
@@ -40,7 +43,7 @@ export default function WaterBackground() {
     let last = start;
 
     const seed = () => {
-      const count = Math.min(240, Math.round((w * h) / 7000));
+      const count = Math.min(lowPower ? 70 : 240, Math.round((w * h) / (lowPower ? 6000 : 7000)));
       particles = Array.from({ length: count }, () => ({
         x: Math.random() * w,
         y: Math.random() * h,
@@ -54,15 +57,21 @@ export default function WaterBackground() {
     };
 
     const resize = () => {
+      const nw = window.innerWidth;
+      const nh = window.innerHeight;
+      // On phones the address bar showing/hiding only changes the height.
+      // Keep the existing particles and never shrink, so nothing flickers while scrolling.
+      if (nw === w && nh <= h) return;
+      const widthChanged = nw !== w;
       dpr = Math.min(window.devicePixelRatio || 1, 2);
-      w = window.innerWidth;
-      h = window.innerHeight;
+      w = nw;
+      h = Math.max(nh, widthChanged ? 0 : h);
       canvas.width = Math.round(w * dpr);
       canvas.height = Math.round(h * dpr);
       canvas.style.width = `${w}px`;
       canvas.style.height = `${h}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      seed();
+      if (widthChanged || particles.length === 0) seed();
       if (reduced) draw(0, -1);
     };
 
@@ -115,12 +124,13 @@ export default function WaterBackground() {
     };
 
     const loop = (now: number) => {
+      raf = requestAnimationFrame(loop);
+      if (now - last < frameMs) return;
       const dt = Math.min(50, now - last);
       last = now;
       const t = (now - start) % (SWEEP_MS + PAUSE_MS);
       const beamX = t < SWEEP_MS ? -80 + (t / SWEEP_MS) * (w + 160) : -1;
       draw(dt, beamX);
-      raf = requestAnimationFrame(loop);
     };
 
     const onVisibility = () => {

@@ -42,7 +42,9 @@ export default function HowItWorks() {
   const Icon = icons[active];
 
   return (
-    <div ref={ref} className="grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+    <>
+    <MobileSteps />
+    <div ref={ref} className="hidden gap-6 lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
       <div role="tablist" aria-label="Steps" aria-orientation="vertical" onKeyDown={onKey} className="grid gap-2">
         {steps.map((s, i) => {
           const on = i === active;
@@ -114,5 +116,74 @@ export default function HowItWorks() {
         <div className="pointer-events-none absolute -right-16 -bottom-16 h-56 w-56 rounded-full bg-scatter/20 blur-3xl" />
       </Glass>
     </div>
+    </>
+  );
+}
+
+/** Phones: an accordion, so the detail opens right under the step that was tapped. */
+function MobileSteps() {
+  const [open, setOpen] = useState(0);
+  const reduce = useReducedMotion();
+
+  return (
+    <ol className="grid gap-2 lg:hidden">
+      {steps.map((s, i) => {
+        const on = i === open;
+        const Icon = icons[i];
+        return (
+          <li key={s.title} className={cn("overflow-hidden rounded-2xl transition-colors", on ? "glass-strong" : "bg-white/[0.04]")}>
+            <h3>
+              <button
+                type="button"
+                aria-expanded={on}
+                aria-controls={`m-step-${i}`}
+                onClick={() => setOpen(on ? -1 : i)}
+                className="flex min-h-14 w-full items-center gap-4 px-4 py-3 text-left"
+              >
+                <span
+                  className={cn(
+                    "grid h-9 w-9 shrink-0 place-items-center rounded-full font-display text-sm font-semibold transition-colors",
+                    on ? "bg-scatter text-abyss" : "bg-white/[0.07] text-mist",
+                  )}
+                >
+                  {i + 1}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block font-medium text-foam">{s.title}</span>
+                  <span className="block text-sm text-mist/80">{s.short}</span>
+                </span>
+                <motion.span
+                  aria-hidden
+                  animate={{ rotate: on ? 45 : 0 }}
+                  transition={{ duration: reduce ? 0 : 0.25 }}
+                  className="text-2xl leading-none text-mist"
+                >
+                  +
+                </motion.span>
+              </button>
+            </h3>
+            <AnimatePresence initial={false}>
+              {on && (
+                <motion.div
+                  id={`m-step-${i}`}
+                  key="body"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: reduce ? 0 : 0.3, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <div className="flex gap-4 px-4 pt-1 pb-5">
+                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-scatter/15 text-scatter ring-1 ring-scatter/30">
+                      <Icon className="h-5 w-5" />
+                    </span>
+                    <p className="leading-relaxed text-mist">{s.body}</p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </li>
+        );
+      })}
+    </ol>
   );
 }

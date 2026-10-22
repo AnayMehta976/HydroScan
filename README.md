@@ -366,8 +366,8 @@ npm run dev              # open http://localhost:3000
 
 | Member | Role |
 |:-------|:-----|
-| **Anay Mehta** | System architecture, machine learning and software. Designed the optical analysis pipeline, trained the model, and integrated hardware with software. |
-| **Yuvraj Nikum** | Hardware and prototyping. Led the enclosure design, optical chamber, illumination layout and electronics. |
+| **Anay Mehta** | Hardware and prototyping. Led the enclosure design, optical chamber, illumination layout and electronics. |
+| **Yuvraj Nikum** | System architecture, machine learning and software. Designed the optical analysis pipeline, trained the model, and integrated hardware with software. |
 
 ---
 

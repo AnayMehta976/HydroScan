@@ -14,7 +14,7 @@ export default function DemoVideo() {
         {playing ? (
           <iframe
             className="absolute inset-0 h-full w-full"
-            src={`https://www.youtube-nocookie.com/embed/${links.youtubeId}?autoplay=1&rel=0`}
+            src={`https://www.youtube-nocookie.com/embed/${links.youtubeId}?autoplay=1&rel=0&playsinline=1`}
             title="HydroScan demo video"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen

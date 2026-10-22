@@ -155,14 +155,14 @@ export const business = {
 export const team = [
   {
     name: "Anay Mehta",
-    role: "System architecture, machine learning and software",
-    body: "Designed the optical analysis pipeline, trained the classification model and integrated the hardware with the software.",
+    role: "Hardware and prototyping",
+    body: "Led the enclosure design, optical chamber construction, illumination layout and electronics integration.",
     initials: "AM",
   },
   {
     name: "Yuvraj Nikum",
-    role: "Hardware and prototyping",
-    body: "Led the enclosure design, optical chamber construction, illumination layout and electronics integration.",
+    role: "System architecture, machine learning and software",
+    body: "Designed the optical analysis pipeline, trained the classification model and integrated the hardware with the software.",
     initials: "YN",
   },
 ];

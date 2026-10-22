@@ -32,6 +32,10 @@ html {
 }
 
 body {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  overflow-x: clip;
   background: var(--color-abyss);
   color: var(--color-foam);
   font-family: var(--font-sans);
@@ -85,8 +89,10 @@ body {
     transparent 60%
   );
 }
-.sheen:hover::after {
-  opacity: 1;
+@media (hover: hover) {
+  .sheen:hover::after {
+    opacity: 1;
+  }
 }
 
 /* ---------- Background water light ---------- */
@@ -159,6 +165,32 @@ body {
 @keyframes blink {
   50% {
     opacity: 0;
+  }
+}
+
+/* Phones: lighter blur and calmer background so scrolling stays smooth */
+@media (max-width: 767px) {
+  .glass {
+    backdrop-filter: blur(14px) saturate(140%);
+  }
+  .glass-strong {
+    backdrop-filter: blur(18px) saturate(150%);
+  }
+  .caustic {
+    filter: blur(60px);
+    opacity: 0.45;
+  }
+  .caustic-a {
+    width: 90vw;
+    height: 90vw;
+  }
+  .caustic-b {
+    width: 80vw;
+    height: 80vw;
+  }
+  .caustic-c {
+    width: 75vw;
+    height: 75vw;
   }
 }
 

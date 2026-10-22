@@ -22,12 +22,21 @@ export default function Nav() {
       },
       { rootMargin: "-45% 0px -50% 0px" },
     );
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    const wide = window.matchMedia("(min-width: 768px)");
+    const onWide = () => wide.matches && setOpen(false);
+    window.addEventListener("keydown", onKey);
+    wide.addEventListener("change", onWide);
     navItems.forEach(({ id }) => {
       const el = document.getElementById(id);
       if (el) io.observe(el);
     });
     return () => {
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("keydown", onKey);
+      wide.removeEventListener("change", onWide);
       io.disconnect();
     };
   }, []);
@@ -38,7 +47,7 @@ export default function Nav() {
         aria-label="Main"
         className={cn(
           "mx-auto flex max-w-6xl items-center justify-between rounded-full px-3 py-2 transition-all duration-500",
-          scrolled ? "glass-strong" : "border border-transparent",
+          scrolled || open ? "glass-strong" : "border border-transparent",
         )}
       >
         <a href="#top" className="flex items-center gap-2 rounded-full px-3 py-1.5 font-display text-lg font-semibold tracking-tight">
@@ -81,7 +90,7 @@ export default function Nav() {
           </a>
           <button
             type="button"
-            className="rounded-full p-2 text-foam md:hidden"
+            className="grid h-11 w-11 place-items-center rounded-full text-foam md:hidden"
             aria-expanded={open}
             aria-controls="mobile-menu"
             aria-label={open ? "Close menu" : "Open menu"}

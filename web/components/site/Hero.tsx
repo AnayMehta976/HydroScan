@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { Play } from "lucide-react";
 import LcdReadout from "./LcdReadout";
@@ -9,9 +10,19 @@ const ease = [0.22, 1, 0.36, 1] as const;
 
 export default function Hero() {
   const reduce = useReducedMotion();
+  const [small, setSmall] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 1023px)");
+    const on = () => setSmall(mq.matches);
+    on();
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
+  // Parallax only on large screens; on phones the hero simply scrolls.
+  const still = reduce || small;
   const { scrollY } = useScroll();
-  const y = useTransform(scrollY, [0, 600], [0, reduce ? 0 : -60]);
-  const fade = useTransform(scrollY, [0, 500], [1, reduce ? 1 : 0.35]);
+  const y = useTransform(scrollY, [0, 600], [0, still ? 0 : -60]);
+  const fade = useTransform(scrollY, [0, 500], [1, still ? 1 : 0.35]);
 
   const lines = ["Making microplastic", "pollution visible"];
 
@@ -25,7 +36,7 @@ export default function Hero() {
         };
 
   return (
-    <section id="top" className="relative flex min-h-[100svh] items-center px-4 pt-28 pb-16 sm:px-6">
+    <section id="top" className="relative flex min-h-[100svh] items-center px-4 pt-24 pb-16 sm:px-6 sm:pt-28">
       <motion.div style={{ y, opacity: fade }} className="mx-auto grid w-full max-w-6xl items-center gap-12 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
         <div>
           <motion.p {...rise(0.05)} className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-3.5 py-1.5 text-sm text-mist backdrop-blur-md">
@@ -33,7 +44,7 @@ export default function Hero() {
             Conrad Challenge 2025–26
           </motion.p>
 
-          <h1 className="font-display text-[clamp(2.8rem,8vw,6.2rem)] leading-[0.95] font-semibold tracking-[-0.035em]">
+          <h1 className="font-display text-[clamp(2.35rem,10.5vw,6.2rem)] leading-[0.95] font-semibold tracking-[-0.035em]">
             {lines.map((l, i) => (
               <span key={l} className="block overflow-hidden pb-[0.08em]">
                 <motion.span
@@ -53,23 +64,23 @@ export default function Hero() {
             No lab, no chemicals, no internet.
           </motion.p>
 
-          <motion.div {...rise(0.65)} className="mt-9 flex flex-wrap items-center gap-3">
+          <motion.div {...rise(0.65)} className="mt-9 flex flex-col gap-3 min-[420px]:flex-row min-[420px]:flex-wrap min-[420px]:items-center">
             <a
               href="#how"
-              className="rounded-full bg-foam px-6 py-3 font-semibold text-abyss shadow-[0_10px_40px_-10px_rgba(159,240,255,0.7)] transition hover:-translate-y-0.5 hover:bg-white"
+              className="rounded-full bg-foam px-6 py-3.5 text-center font-semibold text-abyss shadow-[0_10px_40px_-10px_rgba(159,240,255,0.7)] transition hover:-translate-y-0.5 hover:bg-white"
             >
               See how it works
             </a>
             <a
               href="#demo"
-              className="glass flex items-center gap-2 rounded-full px-5 py-3 font-medium text-foam transition hover:-translate-y-0.5 hover:bg-white/10"
+              className="glass flex items-center justify-center gap-2 rounded-full px-5 py-3.5 font-medium text-foam transition hover:-translate-y-0.5 hover:bg-white/10"
             >
               <Play className="h-4 w-4 fill-current" />
               Watch the demo
             </a>
           </motion.div>
 
-          <motion.dl {...rise(0.8)} className="mt-12 grid max-w-xl grid-cols-3 gap-6 border-t border-white/10 pt-6">
+          <motion.dl {...rise(0.8)} className="mt-10 grid max-w-xl grid-cols-3 gap-4 border-t border-white/10 pt-6 sm:mt-12 sm:gap-6">
             {[
               ["≈ ₹8,000", "to build"],
               ["₹0", "per test"],
@@ -77,7 +88,7 @@ export default function Hero() {
             ].map(([v, l]) => (
               <div key={l}>
                 <dt className="sr-only">{l}</dt>
-                <dd className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">{v}</dd>
+                <dd className="font-display text-xl font-semibold tracking-tight min-[380px]:text-2xl sm:text-3xl">{v}</dd>
                 <dd className="text-sm text-mist">{l}</dd>
               </div>
             ))}
