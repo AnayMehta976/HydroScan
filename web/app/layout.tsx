@@ -1,20 +1,26 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import "@fontsource-variable/bricolage-grotesque/opsz.css";
+import "@fontsource/instrument-sans/400.css";
+import "@fontsource/instrument-sans/500.css";
+import "@fontsource/instrument-sans/600.css";
+import "@fontsource/vt323/400.css";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
+  metadataBase: new URL("https://hydro-scan-six.vercel.app"),
   title: "HydroScan – Making Microplastic Pollution Visible",
-  description: "A portable, offline, low-cost device that screens water for microplastic contamination on-site.",
+  description:
+    "HydroScan is a portable, offline, low-cost optical device that screens water for microplastic contamination on-site. No lab, no chemicals, no internet.",
+  openGraph: {
+    title: "HydroScan – Making Microplastic Pollution Visible",
+    description:
+      "A portable, offline device that screens water for microplastics on-site. Conrad Challenge 2025–26.",
+    images: ["/prototype-exterior.jpg"],
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#031420",
 };
 
 export default function RootLayout({
@@ -24,11 +30,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
+      <body className="antialiased">{children}</body>
     </html>
   );
 }
