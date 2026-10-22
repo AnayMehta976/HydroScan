@@ -286,7 +286,7 @@ export default function Home() {
             <div className="head">
               <div>
                 <h2 className="display h2">The working prototype</h2>
-                <p className="lede muted">A sealed optical chamber with LED strips, a Raspberry Pi 4, a Camera Module v3 NOIR and a 16×2 LCD, running on a USB-C power bank.</p>
+                <p className="lede muted">A sealed optical chamber with a three-wall LED strip, a Raspberry Pi 4, a Camera Module v3 NOIR and a 16×2 LCD, running on a USB-C power bank.</p>
               </div>
             </div>
             <div className="proto">

@@ -7,7 +7,7 @@ export const LABELS: BuildLabel[] = [
   { n: 3, name: "16×2 LCD", note: "Shows level, index and count", side: "right" },
   { n: 4, name: "Raspberry Pi 4", note: "Runs OpenCV and the model offline", side: "left" },
   { n: 5, name: "Camera Module v3 NOIR", note: "Looks straight down at the water", side: "right" },
-  { n: 6, name: "White LED strips", note: "Light the sample from the sides", side: "left" },
+  { n: 6, name: "White LED strip", note: "One strip on three walls, at dish height", side: "left" },
   { n: 7, name: "Chamber walls", note: "Black outside, white inside", side: "left" },
   { n: 8, name: "Glass dish", note: "Holds the water sample", side: "right" },
   { n: 9, name: "Base", note: "Keeps the dish at a fixed height", side: "left" },

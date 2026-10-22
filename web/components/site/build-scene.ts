@@ -1,6 +1,6 @@
 /**
  * Three.js model of the HydroScan prototype, built from the real device:
- * base, open chamber (black outside, white inside) with side LED strips,
+ * base, open chamber (black outside, white inside) with one LED strip on three walls,
  * a rectangular glass dish, and a top housing holding the Raspberry Pi,
  * the downward camera and the 16×2 LCD. Units are roughly centimetres.
  */
@@ -141,25 +141,30 @@ export async function createBuildScene(dpr: number): Promise<BuildScene> {
   add(wall(0.6, 8, 20, "x", -1), [11.7, 10, 0], [11, 0, 0], 0.1, [0, 0, 0]);
   add(wall(24, 8, 0.6, "z", 1), [0, 10, -9.7], [0, 0, -9], 0.1, [0, 0, 0]);
 
-  // ---------- LED strips ----------
-  const strip = () => {
+  // ---------- LED strip: one continuous strip along three inside walls, at dish height ----------
+  const strip = (len: number) => {
     const g = new THREE.Group();
-    g.add(new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.6, 17), ledBase));
-    for (let i = 0; i < 14; i++) {
+    g.add(new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.6, len), ledBase));
+    const n = Math.round(len / 1.2);
+    for (let i = 0; i < n; i++) {
       const chip = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.32, 0.5), ledChip);
-      chip.position.set(0.1, 0, -7.8 + i * 1.2);
+      chip.position.set(0.1, 0, -len / 2 + 0.6 + i * 1.2);
       g.add(chip);
     }
-    const light = new THREE.PointLight(0xfff1d8, 26, 30, 1.6);
-    light.position.set(1.5, -1, 0);
+    const light = new THREE.PointLight(0xfff1d8, 20, 30, 1.6);
+    light.position.set(1.5, 0.5, 0);
     g.add(light);
     return g;
   };
-  const sl = strip();
-  add(sl, [-11.25, 13.1, 0], [-5.5, 0, 0], 0.16, [0, 0, 6], 6);
-  const sr = strip();
+  const LED_Y = 8.2;
+  const sl = strip(18.6);
+  add(sl, [-11.25, LED_Y, -0.4], [-5.5, 0, 0], 0.16, [0, 0, 6], 6);
+  const sb = strip(22.5);
+  sb.rotation.y = -Math.PI / 2;
+  add(sb, [0, LED_Y, -9.25], [0, 0, -5], 0.16, [0, 0, 0]);
+  const sr = strip(18.6);
   sr.rotation.y = Math.PI;
-  add(sr, [11.25, 13.1, 0], [5.5, 0, 0], 0.16, [0, 0, 0]);
+  add(sr, [11.25, LED_Y, -0.4], [5.5, 0, 0], 0.16, [0, 0, 0]);
 
   // ---------- glass dish with water ----------
   const dish = new THREE.Group();
