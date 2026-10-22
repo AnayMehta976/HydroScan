@@ -34,8 +34,9 @@ No lab, no chemicals, no internet.
 11. [Output Data](#-output-data)
 12. [Troubleshooting](#-troubleshooting)
 13. [Bill of Materials](#-bill-of-materials)
-14. [Team](#-team)
-15. [License](#-license)
+14. [Website](#-website)
+15. [Team](#-team)
+16. [License](#-license)
 
 ---
 
@@ -120,6 +121,8 @@ HydroScan/
 │
 ├── systemd/
 │   └── hydroscan.service      # Autostart on boot
+│
+├── web/                       # Project website (Next.js, deployed on Vercel)
 │
 └── data/
     ├── samples/               # Your own test images (optional)
@@ -342,6 +345,20 @@ python3 scripts/reset_camera.py
 | Enclosure | 300 |
 | Miscellaneous | 450 |
 | **Total** | **≈ 8,000** |
+
+---
+
+## 🌐 Website
+
+The project website lives in [`web/`](web/) and is built with **Next.js** and deployed on **Vercel**.
+
+```bash
+cd web
+npm install
+npm run dev              # open http://localhost:3000
+```
+
+> On Vercel, the project's **Root Directory** must be set to `web`.
 
 ---
 

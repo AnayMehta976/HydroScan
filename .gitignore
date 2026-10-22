@@ -33,7 +33,6 @@ ml/dataset/
 
 # --- Phone app / website / networking  (EXCLUDED from this repo) ---
 android/
-web/
 hydroscan/server.py
 hydroscan/controller.py
 scripts/ble_service.py
