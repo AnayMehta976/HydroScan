@@ -97,11 +97,12 @@ export default function Build() {
           .sort((p, q) => p.y - q.y)
           .map((a) => ({ a, y: Math.min(Math.max(a.y - LABEL_H / 2, M), h - LABEL_H - M) }));
         for (let k = 1; k < items.length; k++) items[k].y = Math.max(items[k].y, items[k - 1].y + LABEL_H + GAP);
-        const over = items.length ? items[items.length - 1].y + LABEL_H - (h - M) : 0;
-        if (over > 0) for (let k = items.length - 1; k >= 0; k--) {
-          items[k].y -= over;
-          if (k > 0 && items[k - 1].y > items[k].y - LABEL_H - GAP) items[k - 1].y = items[k].y - LABEL_H - GAP;
+        // Backward pass: keep the bottom label inside the frame, nudging only the ones that collide.
+        for (let k = items.length - 1; k >= 0; k--) {
+          const limit = k === items.length - 1 ? h - M - LABEL_H : items[k + 1].y - LABEL_H - GAP;
+          items[k].y = Math.min(items[k].y, limit);
         }
+        for (let k = 0; k < items.length; k++) items[k].y = Math.max(items[k].y, k === 0 ? M : items[k - 1].y + LABEL_H + GAP);
         items.forEach(({ a, y }) => {
           const i = a.n - 1;
           const el = labelRefs.current[i];
