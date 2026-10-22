@@ -380,7 +380,7 @@ a { color: inherit; }
 
 /* ---------- The build (exploded view) ---------- */
 .build__stage {
-  position: relative; height: clamp(460px, calc(100svh - 200px), 760px);
+  position: relative; height: clamp(340px, calc(100svh - 200px), 760px);
   border: 1.5px solid var(--ink); border-radius: var(--r); overflow: hidden;
   background:
     radial-gradient(70% 60% at 50% 45%, rgba(247, 250, 253, .95), rgba(237, 243, 248, .55) 70%, rgba(237, 243, 248, 0)),
