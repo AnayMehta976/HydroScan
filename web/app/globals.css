@@ -639,3 +639,15 @@ a { color: inherit; }
   .hero__stats { margin-top: 22px; padding-top: 12px; }
   .hero__lens-col { gap: 24px; }
 }
+
+/* Pipeline steps as cards on the dark section */
+.pipe-steps { gap: 10px; }
+.pipe-step {
+  background: #0d2f4d; border: 2px solid rgba(63, 224, 255, .55); border-left-width: 2px; border-radius: 8px;
+  box-shadow: 3px 3px 0 rgba(63, 224, 255, .45);
+}
+.pipe-step h3 { color: var(--on-field); }
+.pipe-step.on { background: var(--card); border: var(--bw) solid var(--aqua); box-shadow: 5px 5px 0 var(--aqua); }
+.pipe-step.on h3 { color: var(--ink); }
+.pipe-step.on p { color: var(--ink-2); }
+@media (max-width: 899px) { .pipe-step p { color: var(--on-field-2); } .pipe-step.on p { color: var(--ink-2); } }
