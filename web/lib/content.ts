@@ -7,115 +7,99 @@ export const links = {
 export const navItems = [
   { id: "problem", label: "Problem" },
   { id: "how", label: "How it works" },
-  { id: "technology", label: "Technology" },
+  { id: "pipeline", label: "Pipeline" },
+  { id: "try", label: "Try a scan" },
   { id: "prototype", label: "Prototype" },
   { id: "business", label: "Business" },
   { id: "team", label: "Team" },
 ];
 
 export const foundIn = [
-  "Oceans",
-  "Rivers",
-  "Groundwater",
-  "Bottled water",
-  "Municipal drinking water",
-  "Human blood",
-  "Lung tissue",
-  "Placental samples",
+  "oceans",
+  "rivers",
+  "groundwater",
+  "bottled water",
+  "drinking water",
+  "human blood",
+  "lung tissue",
+  "placentas",
 ];
 
 export const comparison = [
   { label: "Where it runs", lab: "Specialist laboratory", hydro: "On-site, anywhere" },
   { label: "Cost per test", lab: "Per-sample fees", hydro: "₹0 after purchase" },
-  { label: "Chemicals", lab: "Sample preparation needed", hydro: "None, purely optical" },
+  { label: "Chemicals", lab: "Sample preparation", hydro: "None, purely optical" },
   { label: "Who can run it", lab: "Trained professionals", hydro: "Anyone, one button" },
   { label: "Internet", lab: "Lab infrastructure", hydro: "Not needed" },
-  { label: "What you get", lab: "Detailed polymer analysis", hydro: "Low / Medium / High screening" },
+  { label: "What you get", lab: "Detailed polymer analysis", hydro: "Low, Medium or High screening" },
 ];
 
 export const steps = [
   {
     title: "Place the sample",
     short: "Sealed chamber",
-    body: "A water sample goes into a transparent glass dish inside a sealed chamber. The enclosure blocks ambient light so every test starts from the same conditions.",
+    body: "A water sample goes into a glass dish inside a sealed chamber. The enclosure blocks ambient light, so every test starts from the same conditions.",
   },
   {
-    title: "Illuminate",
-    short: "Fixed-angle LEDs",
-    body: "White LEDs light the sample from fixed angles. Plastic particles scatter and refract light differently from the water around them, because of their refractive index, shape and surface.",
+    title: "Light it up",
+    short: "White LED strips",
+    body: "LEDs light the sample from the sides. Plastic particles scatter and refract light differently from the water around them, so they glow against the dark.",
   },
   {
     title: "Capture",
     short: "Camera Module v3 NOIR",
-    body: "A fixed camera connected to a Raspberry Pi 4 photographs the scattering pattern. Several frames are taken per scan so one bad frame never decides the result.",
+    body: "A fixed camera looks straight down and takes several frames per scan, so a single bad frame never decides the result.",
   },
   {
     title: "Clean up the image",
-    short: "Preprocessing",
-    body: "The image is cropped to the water, lighting is evened out, and LED reflections are masked so glare is never mistaken for a particle.",
+    short: "Raspberry Pi 4",
+    body: "The Pi crops to the water, evens out the lighting and masks LED reflections, so glare is never mistaken for a particle.",
   },
   {
-    title: "Analyse on the device",
+    title: "Find and judge every particle",
     short: "OpenCV + ML, offline",
-    body: "Computer vision finds and separates every particle and scores how plastic-like it is. A trained model then classifies the sample, entirely on the Pi with no cloud.",
+    body: "Computer vision finds and separates each particle and scores how plastic-like it is. A trained model then classifies the sample, entirely on the device.",
   },
   {
     title: "Read the result",
     short: "16×2 LCD",
-    body: "The LCD shows the contamination level, a relative index and the particle count, for example HIGH 74% n=74. An annotated image and a log entry are saved too.",
+    body: "The screen shows the level, a relative index and the particle count, for example HIGH 74% n=74. An annotated image and a log entry are saved too.",
   },
 ];
 
+/** Each step matches an image rendered by running HydroScan's detector. */
 export const pipeline = [
-  { title: "Crop to the water", body: "Only the region of interest is analysed." },
-  { title: "Even out the lighting", body: "CLAHE balances uneven LED illumination so corners and centre are treated the same." },
-  { title: "Mask glare", body: "Large saturated blobs from LED reflections are detected and excluded." },
-  { title: "Double detection", body: "A top-hat filter and an adaptive threshold must both agree a pixel is a particle, which removes most noise." },
-  { title: "Split touching particles", body: "A watershed step separates specks stuck together, so two count as two." },
-  { title: "Score each particle", body: "Colour, solidity and shape give every blob a 0–1 plastic score. Sand and organic debris are left out of the count." },
-  { title: "Combine frames", body: "The median count and averaged features across all good frames give the final reading." },
+  { title: "Crop to the water", body: "Only the region of interest inside the dish is analysed.", img: "/pipeline/stage-1-raw.webp" },
+  { title: "Even out the lighting", body: "CLAHE balances the LED light, so corners and centre are treated the same.", img: "/pipeline/stage-2-clahe.webp" },
+  { title: "Mask the glare", body: "Saturated LED reflections are found and blocked out, shown here in orange.", img: "/pipeline/stage-3-glare.webp" },
+  { title: "Find bright specks", body: "A white top-hat filter lifts small bright particles off the slowly varying background.", img: "/pipeline/stage-4-tophat.webp" },
+  { title: "Make both detectors agree", body: "The top-hat result and an adaptive threshold must both fire for a pixel to count. Noise drops out.", img: "/pipeline/stage-5-binary.webp" },
+  { title: "Split touching particles", body: "A watershed step separates specks stuck together. Each colour is one particle.", img: "/pipeline/stage-6-split.webp" },
+  { title: "Score and count", body: "Colour, solidity and shape give each particle a plastic score. Green is counted as plastic; orange is debris and left out.", img: "/pipeline/stage-7-annotated.webp" },
 ];
 
 export const levels = [
-  {
-    key: "low",
-    name: "Low",
-    range: "0–50 particles / L",
-    pattern: "Minimal scattering",
-    lcd: ["LOW   12%  n=12", "Water looks OK"],
-  },
-  {
-    key: "medium",
-    name: "Medium",
-    range: "50–500 particles / L",
-    pattern: "Sparse but clearly detectable scattering",
-    lcd: ["MEDIUM 41% n=41", "Test again soon"],
-  },
-  {
-    key: "high",
-    name: "High",
-    range: "Over 500 particles / L",
-    pattern: "Dense, high-intensity scattering",
-    lcd: ["HIGH  74%  n=74", "Investigate"],
-  },
+  { key: "low", name: "Low", range: "0–50 particles / L", pattern: "Minimal scattering", lcd: ["LOW   12%  n=12", "Water looks OK"], particles: 7 },
+  { key: "medium", name: "Medium", range: "50–500 particles / L", pattern: "Sparse but clearly detectable", lcd: ["MEDIUM 41% n=41", "Test again soon"], particles: 26 },
+  { key: "high", name: "High", range: "Over 500 particles / L", pattern: "Dense, high-intensity scattering", lcd: ["HIGH  74%  n=74", "Investigate"], particles: 64 },
 ] as const;
 
 export const modelStats = [
-  { value: 88, suffix: "%", prefix: "~", label: "accuracy on held-out images" },
-  { value: 100, suffix: "%", prefix: "", label: "recall on HIGH samples" },
-  { value: 500, suffix: "", prefix: "", label: "labelled training images" },
-  { value: 5, suffix: "", prefix: "", label: "classes, including non-plastic" },
+  { value: 88, prefix: "~", suffix: "%", label: "accuracy on held-out images" },
+  { value: 100, prefix: "", suffix: "%", label: "recall on HIGH samples" },
+  { value: 500, prefix: "", suffix: "", label: "labelled training images" },
+  { value: 5, prefix: "", suffix: "", label: "classes, including non-plastic" },
 ];
 
 export const modelClasses = ["clean", "low", "medium", "high", "non_plastic"];
 
 export const features = [
-  { title: "Fully offline", body: "All analysis runs on the Raspberry Pi. No internet or cloud account." },
-  { title: "No consumables", body: "Reusable indefinitely after one purchase. Zero cost per test." },
-  { title: "No chemicals", body: "A purely optical, non-destructive measurement." },
-  { title: "Portable", body: "Runs from a USB-C power bank, built for field work and disaster response." },
-  { title: "Easy to read", body: "One button, and a plain Low, Medium or High result anyone can act on." },
-  { title: "Affordable", body: "About ₹8,000 in parts, built from widely available components." },
+  { title: "Fully offline", body: "Every step runs on the Raspberry Pi. No internet, no cloud account.", tag: "No signal needed" },
+  { title: "No consumables", body: "Reusable indefinitely after one purchase. Zero cost per test.", tag: "₹0 per test" },
+  { title: "No chemicals", body: "A purely optical, non-destructive measurement.", tag: "Light only" },
+  { title: "Portable", body: "Runs from a USB-C power bank, so it goes where the water is.", tag: "Power bank" },
+  { title: "Easy to read", body: "One button and a plain Low, Medium or High result anyone can act on.", tag: "One button" },
+  { title: "Affordable", body: "About ₹8,000 in parts, from widely available components.", tag: "≈ ₹8,000" },
 ];
 
 export const bom = [
@@ -129,16 +113,16 @@ export const bom = [
 ];
 
 export const validation = [
-  "Built a working prototype with a transparent sampling chamber, LED illumination, camera module and embedded computer.",
-  "Prepared water samples across all three contamination ranges and confirmed consistent, visually distinct scattering patterns.",
-  "Captured labelled image sets under standard conditions and trained a classification model that separates the categories reliably.",
-  "Ran dozens of repeated test cycles with no consumables or replacement parts, confirming zero cost per test.",
-  "Refined the enclosure, lighting uniformity and camera alignment over several iterations to make the model more robust.",
-  "Tested with peers and mentors, who operated it without any specialised training.",
+  "Built a working prototype: transparent sampling chamber, LED illumination, camera module and embedded computer.",
+  "Prepared samples across all three contamination ranges and confirmed visibly distinct scattering patterns.",
+  "Captured labelled image sets under standard conditions and trained a model that separates the categories.",
+  "Ran dozens of repeated test cycles with no consumables or replacement parts: zero cost per test.",
+  "Refined the enclosure, lighting uniformity and camera alignment over several iterations.",
+  "Tested with peers and mentors, who ran it without any specialised training.",
 ];
 
 export const users = [
-  { title: "Households", body: "Families who want to know what is in their water." },
+  { title: "Households", body: "Families who want to know what’s in their water." },
   { title: "Schools", body: "Hands-on environmental science in the classroom." },
   { title: "NGOs", body: "Community water-monitoring programmes." },
   { title: "Researchers", body: "Citizen scientists and quick field screening." },
@@ -150,6 +134,12 @@ export const business = {
   cost: { inr: "₹8,000", usd: "$89" },
   margin: 33,
   streams: ["Software upgrades", "Institutional analytics", "Licensing"],
+  funding: [
+    "Refining the prototype",
+    "Optimising manufacturing",
+    "Pilots with schools, NGOs and research institutions",
+    "Training the model on real-world captures",
+  ],
 };
 
 export const team = [

@@ -1,159 +1,65 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { Menu, X, Github } from "lucide-react";
 import { navItems, links } from "@/lib/content";
-import { cn } from "@/lib/utils";
 
-export default function Nav() {
-  const [active, setActive] = useState<string>("");
-  const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) if (e.isIntersecting) setActive(e.target.id);
-      },
-      { rootMargin: "-45% 0px -50% 0px" },
-    );
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-    const wide = window.matchMedia("(min-width: 768px)");
-    const onWide = () => wide.matches && setOpen(false);
-    window.addEventListener("keydown", onKey);
-    wide.addEventListener("change", onWide);
-    navItems.forEach(({ id }) => {
-      const el = document.getElementById(id);
-      if (el) io.observe(el);
-    });
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("keydown", onKey);
-      wide.removeEventListener("change", onWide);
-      io.disconnect();
-    };
-  }, []);
-
+export function LensMark({ className }: { className?: string }) {
   return (
-    <header className="fixed inset-x-0 top-3 z-40 px-4">
-      <nav
-        aria-label="Main"
-        className={cn(
-          "mx-auto flex max-w-6xl items-center justify-between rounded-full px-3 py-2 transition-all duration-500",
-          scrolled || open ? "glass-strong" : "border border-transparent",
-        )}
-      >
-        <a href="#top" className="flex items-center gap-2 rounded-full px-3 py-1.5 font-display text-lg font-semibold tracking-tight">
-          <Droplet />
-          HydroScan
-        </a>
-
-        <ul className="hidden items-center gap-1 md:flex">
-          {navItems.map((n) => (
-            <li key={n.id} className="relative">
-              <a
-                href={`#${n.id}`}
-                className={cn(
-                  "relative z-10 block rounded-full px-3.5 py-1.5 text-sm transition-colors",
-                  active === n.id ? "text-foam" : "text-mist hover:text-foam",
-                )}
-              >
-                {n.label}
-              </a>
-              {active === n.id && (
-                <motion.span
-                  layoutId="nav-pill"
-                  className="absolute inset-0 rounded-full bg-white/10 ring-1 ring-white/15"
-                  transition={{ type: "spring", stiffness: 380, damping: 32 }}
-                />
-              )}
-            </li>
-          ))}
-        </ul>
-
-        <div className="flex items-center gap-2">
-          <a
-            href={links.github}
-            target="_blank"
-            rel="noreferrer"
-            className="hidden items-center gap-2 rounded-full bg-foam px-4 py-1.5 text-sm font-semibold text-abyss transition hover:bg-white sm:flex"
-          >
-            <Github className="h-4 w-4" />
-            GitHub
-          </a>
-          <button
-            type="button"
-            className="grid h-11 w-11 place-items-center rounded-full text-foam md:hidden"
-            aria-expanded={open}
-            aria-controls="mobile-menu"
-            aria-label={open ? "Close menu" : "Open menu"}
-            onClick={() => setOpen((o) => !o)}
-          >
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
-        </div>
-      </nav>
-
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            id="mobile-menu"
-            initial={{ opacity: 0, y: -8, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.98 }}
-            transition={{ duration: 0.2 }}
-            className="glass-strong mx-auto mt-2 max-w-6xl rounded-3xl p-3 md:hidden"
-          >
-            <ul className="grid gap-1">
-              {navItems.map((n) => (
-                <li key={n.id}>
-                  <a
-                    href={`#${n.id}`}
-                    onClick={() => setOpen(false)}
-                    className="block rounded-2xl px-4 py-3 text-foam hover:bg-white/10"
-                  >
-                    {n.label}
-                  </a>
-                </li>
-              ))}
-              <li>
-                <a
-                  href={links.github}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex items-center gap-2 rounded-2xl px-4 py-3 text-foam hover:bg-white/10"
-                >
-                  <Github className="h-4 w-4" /> GitHub
-                </a>
-              </li>
-            </ul>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </header>
+    <svg viewBox="0 0 32 32" className={className} aria-hidden>
+      <circle cx="16" cy="16" r="13" fill="#02070b" />
+      <circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" strokeWidth="2" />
+      <circle cx="11" cy="12" r="1.6" fill="#cff6ff" />
+      <circle cx="19.5" cy="19" r="1.2" fill="#cff6ff" />
+      <circle cx="20" cy="11" r="1.6" fill="#ff9a2e" />
+      <path d="M8.2 16.5v-3.2h3.2M23.8 16.5v3.2h-3.2" stroke="#39e17a" strokeWidth="1.6" fill="none" />
+    </svg>
   );
 }
 
-function Droplet() {
+export default function Nav() {
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    const wide = window.matchMedia("(min-width: 1101px)");
+    const onWide = () => wide.matches && setOpen(false);
+    window.addEventListener("keydown", onKey);
+    wide.addEventListener("change", onWide);
+    return () => { window.removeEventListener("keydown", onKey); wide.removeEventListener("change", onWide); };
+  }, []);
+
   return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden>
-      <defs>
-        <linearGradient id="dg" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#c9f7ff" />
-          <stop offset="1" stopColor="#3aa7d6" />
-        </linearGradient>
-      </defs>
-      <path d="M12 2.5c3.6 4.6 6.5 8.2 6.5 11.6A6.5 6.5 0 0 1 5.5 14.1C5.5 10.7 8.4 7.1 12 2.5Z" fill="url(#dg)" />
-      <circle cx="10" cy="14" r="1.2" fill="#031420" opacity=".55" />
-      <circle cx="13.6" cy="16.2" r=".8" fill="#031420" opacity=".55" />
-      <circle cx="13" cy="12" r=".6" fill="#031420" opacity=".55" />
-    </svg>
+    <header className={`nav${open ? " is-open" : ""}`}>
+      <div className="nav__bar">
+        <a className="nav__logo" href="#top" aria-label="HydroScan, back to top">
+          <LensMark />
+          HydroScan
+        </a>
+        <nav aria-label="Sections">
+          <ul className="nav__links">
+            {navItems.map((n) => (
+              <li key={n.id}><a href={`#${n.id}`} data-nav-link>{n.label}</a></li>
+            ))}
+          </ul>
+        </nav>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <a className="btn nav__cta" href={links.github} target="_blank" rel="noreferrer">GitHub</a>
+          <button
+            className="nav__toggle" type="button" aria-expanded={open} aria-controls="nav-menu"
+            aria-label={open ? "Close menu" : "Open menu"} onClick={() => setOpen((o) => !o)}
+          >
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+              {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
+            </svg>
+          </button>
+        </div>
+        <div className="nav__progress" aria-hidden><i data-nav-progress /></div>
+      </div>
+      <div className="nav__menu" id="nav-menu">
+        {navItems.map((n) => (
+          <a key={n.id} href={`#${n.id}`} onClick={() => setOpen(false)}>{n.label}</a>
+        ))}
+      </div>
+    </header>
   );
 }
