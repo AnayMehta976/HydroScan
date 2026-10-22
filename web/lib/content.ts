@@ -145,14 +145,14 @@ export const business = {
 export const team = [
   {
     name: "Anay Mehta",
-    role: "Hardware and prototyping",
-    body: "Led the enclosure design, optical chamber construction, illumination layout and electronics integration.",
+    role: "Hardware, edge computing and prototyping",
+    body: "Designed and built the device: the light-sealed optical chamber, the three-wall LED illumination and the fixed camera geometry that keeps every scan consistent. Integrated the Raspberry Pi 4 as the edge computer and wrote the code that runs on it, from the button, LED switching and camera capture to the LCD readout, so the whole scan happens on the device with no internet.",
     initials: "AM",
   },
   {
     name: "Yuvraj Nikum",
-    role: "System architecture, machine learning and software",
-    body: "Designed the optical analysis pipeline, trained the classification model and integrated the hardware with the software.",
+    role: "Machine learning and computer vision",
+    body: "Led the entire machine-learning side: designed the OpenCV analysis pipeline that finds and scores each particle, built the synthetic training dataset, and trained and evaluated the Random Forest classifier that turns each image into a Low, Medium or High result.",
     initials: "YN",
   },
 ];
