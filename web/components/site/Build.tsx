@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { BuildScene } from "./build-scene";
-import { LABELS } from "./build-scene";
+import { LABELS } from "./build-labels";
 
 const LABEL_W = 262;
 const LABEL_H = 50;
