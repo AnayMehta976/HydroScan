@@ -1,391 +1,365 @@
-# HydroScan
+<div align="center">
 
-A portable, low-cost freshwater **microplastic screening** device built on a
-Raspberry Pi 4, Camera Module v3 NOIR, white-LED illumination, and OpenCV.
+# 💧 HydroScan
 
-It illuminates a water sample, photographs it, counts suspended particles with
-computer vision, and reports a contamination level (**LOW / MEDIUM / HIGH**) on a
-16×2 LCD.
+### Making Microplastic Pollution Visible
 
-> **Runs before your hardware is wired up.** Every hardware part (camera, LCD,
-> button, LEDs) has an automatic **mock fallback**. So you can copy this onto the
-> Pi today and run the *entire* pipeline using generated test images — then the
-> moment you connect each real part, the code switches to it with no edits.
+A portable, offline, low-cost optical device that screens water for microplastic contamination on-site.
+No lab, no chemicals, no internet.
+
+[![Live Site](https://img.shields.io/badge/Live%20Site-hydro--scan--six.vercel.app-blue?style=flat&logo=vercel)](https://hydro-scan-six.vercel.app/)
+[![Watch the Demo](https://img.shields.io/badge/Watch%20Demo-YouTube-red?style=flat&logo=youtube)](https://www.youtube.com/watch?v=5f7OmmbQsqY)
+![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?style=flat&logo=python&logoColor=white)
+![Raspberry Pi](https://img.shields.io/badge/Raspberry%20Pi-4-C51A4A?style=flat&logo=raspberrypi&logoColor=white)
+![OpenCV](https://img.shields.io/badge/OpenCV-4.8%2B-5C3EE8?style=flat&logo=opencv&logoColor=white)
+
+**Conrad Challenge 2025–26** · Anay Mehta & Yuvraj Nikum
+
+</div>
 
 ---
 
-## 1. What's in this folder
+## 📑 Contents
+
+1. [Overview](#-overview)
+2. [How It Works](#-how-it-works)
+3. [Key Features](#-key-features)
+4. [Project Structure](#-project-structure)
+5. [Quick Start](#-quick-start)
+6. [Hardware Setup](#-hardware-setup)
+7. [Run on Boot](#-run-on-boot)
+8. [Detection Pipeline](#-detection-pipeline)
+9. [Machine Learning](#-machine-learning)
+10. [Configuration & Tuning](#-configuration--tuning)
+11. [Output Data](#-output-data)
+12. [Troubleshooting](#-troubleshooting)
+13. [Bill of Materials](#-bill-of-materials)
+14. [Team](#-team)
+15. [License](#-license)
+
+---
+
+## 🌊 Overview
+
+Microplastics are plastic particles smaller than 5 mm. They have been found in oceans, rivers, groundwater, bottled water, drinking water, and even human blood and tissue. Yet routine monitoring is rare, because standard methods (FTIR and Raman spectroscopy) need expensive lab equipment, trained staff, chemical preparation and per-sample fees.
+
+> **When contamination cannot be measured, it is ignored.**
+
+**HydroScan** is built on a **Raspberry Pi 4**, a **Camera Module v3 NOIR**, **white-LED illumination**, and **OpenCV**. It lights up a water sample, photographs it, counts suspended particles with computer vision, and shows a contamination level on a **16×2 LCD**:
+
+| Level | Particle count* | What you see |
+|:------|:----------------|:-------------|
+| 🟢 **LOW** | fewer than 20 | Minimal scattering |
+| 🟡 **MEDIUM** | 20 – 59 | Sparse, clearly detectable scattering |
+| 🔴 **HIGH** | 60 or more | Dense, high-intensity scattering |
+
+<sub>*Default thresholds for the rule-based fallback. Change them in `config.py`.</sub>
+
+---
+
+## ⚙️ How It Works
+
+```
+ Water sample ─► LED illumination ─► Camera capture ─► OpenCV detection ─► ML classifier ─► LCD result
+```
+
+1. **Sample placement:** water goes into a sealed transparent chamber that blocks ambient light.
+2. **Illumination:** LEDs light the sample from fixed angles. Plastic particles scatter light differently from water.
+3. **Image capture:** a fixed camera takes several frames of the scattering pattern.
+4. **Detection:** OpenCV finds, separates and scores every particle (see [Detection Pipeline](#-detection-pipeline)).
+5. **Classification:** a trained Random Forest model gives the contamination level and a confidence score, all offline.
+6. **Result:** the LCD shows something like `HIGH  74%  n=74`. An annotated image and a log entry are also saved.
+
+---
+
+## ✨ Key Features
+
+| Feature | Description |
+|:--------|:------------|
+| 📴 **Fully offline** | Everything runs on the Raspberry Pi. No cloud needed. |
+| ♻️ **No consumables** | Reusable forever. Zero cost per test. |
+| 🧪 **No chemicals** | Purely optical, non-destructive measurement. |
+| 🎒 **Portable** | Runs from a USB-C power bank, so it works in the field. |
+| 🧩 **Mock fallbacks** | LCD, button and LEDs fall back to console/keyboard if they aren't wired yet. |
+| 🤖 **ML + safe fallback** | Uses the trained model, or simple threshold rules if the model is missing. |
+| 💰 **Affordable** | About ₹8,000 in parts. |
+
+---
+
+## 📁 Project Structure
 
 ```
 HydroScan/
-├── main.py                 # the app: scan loop + offline image mode
-├── config.py               # ALL settings live here (pins, thresholds, paths)
-├── requirements.txt        # Python dependencies
-├── run.sh                  # ./run.sh  -> python3 main.py
+├── main.py                    # App entry point: scan loop + offline image mode
+├── config.py                  # All settings (pins, thresholds, paths)
+├── requirements.txt           # Python dependencies
+├── run.sh                     # Launcher: ./run.sh → python3 main.py
 │
-├── hydroscan/              # the package
-│   ├── camera.py           # Picamera2 (hardware)
-│   ├── display.py          # 16x2 I2C LCD  (mock: prints to console)
-│   ├── button.py           # push button  (mock: press ENTER)
-│   ├── leds.py             # white LED control  (mock: logs on/off)
-│   ├── detector.py         # OpenCV v2 pipeline (glare, watershed, plastic score)
-│   ├── classifier.py       # ML model (ml/model.joblib) with rules fallback
-│   ├── controller.py       # thread-safe scan controller (button + phone)
-│   ├── server.py           # Flask web server: live feed + API + phone UI
-│   └── utils.py            # logging, JSON log, synthetic sample generator
+├── hydroscan/                 # Core package
+│   ├── camera.py              # Picamera2 camera capture
+│   ├── display.py             # 16×2 I2C LCD   (mock: prints to console)
+│   ├── button.py              # Push button     (mock: keyboard)
+│   ├── leds.py                # LED control     (mock: logs on/off)
+│   ├── detector.py            # OpenCV detection pipeline
+│   ├── classifier.py          # ML model with rule-based fallback
+│   └── utils.py               # Logging, JSON log, helpers
 │
-├── web/                    # the phone app (PWA: installable from browser)
-│   ├── index.html          # live feed, scan button, gauge, history
-│   ├── manifest.json / sw.js / icons/
+├── ml/                        # Machine learning
+│   ├── model.joblib           # Trained Random Forest (used by the app)
+│   ├── features.csv           # Training features
+│   ├── extract_features.py    # Images → feature table
+│   ├── train_model.py         # Feature table → model
+│   └── README.md              # ML details and roadmap
 │
-├── android/                # native Android app project (build with Android Studio)
-│
-├── scripts/                # standalone tools
-│   ├── setup_hotspot.sh         # Pi becomes a Wi-Fi hotspot for the phone
-│   ├── ble_service.py           # Bluetooth LE discovery + latest result
-│   ├── reset_camera.py          # reset camera colours (auto white balance)
-│   ├── generate_ml_dataset.py   # make a labelled dataset for ML training
-│   ├── test_camera.py
-│   ├── test_lcd.py
-│   └── test_button_led.py
-│
-├── ml/                     # machine-learning stage (LIVE — model in use)
-│   ├── dataset/            # 100 labelled images per class (5 classes)
-│   ├── model.joblib        # trained Random Forest, loaded by classifier.py
-│   ├── features.csv
-│   ├── extract_features.py
-│   ├── train_model.py
-│   └── README.md
+├── scripts/                   # Standalone tools
+│   ├── test_camera.py         # Camera test
+│   ├── test_lcd.py            # LCD test
+│   ├── test_button_led.py     # Button + LED test
+│   ├── reset_camera.py        # Reset camera white balance
+│   └── generate_ml_dataset.py # Build a synthetic training dataset
 │
 ├── systemd/
-│   ├── hydroscan.service       # autostart phone app + button on boot
-│   └── hydroscan-ble.service   # autostart Bluetooth advertising (optional)
+│   └── hydroscan.service      # Autostart on boot
 │
 └── data/
-    ├── samples/   # optional: drop your own test images here
-    ├── captures/  # raw frames from each scan
-    └── results/   # annotated images + scan_log.jsonl
+    ├── samples/               # Your own test images (optional)
+    ├── captures/              # Raw frames from each scan
+    └── results/               # Annotated images + scan_log.jsonl
 ```
 
 ---
 
-## 2. Quick start — run it on the Pi (camera connected)
+## 🚀 Quick Start
 
-The camera is hardware-only now (no synthetic/mock frames). The LCD, button and
-LEDs still fall back to console/keyboard until they're wired, so you can run the
-full scan loop with just the camera attached.
+> **Requirement:** a Raspberry Pi with the camera connected. The LCD, button and LEDs are optional at first.
 
 ```bash
-# 1. install dependencies
+# 1. Clone the repo
+git clone https://github.com/AnayMehta976/HydroScan.git
+cd HydroScan
+
+# 2. Install dependencies
 pip install -r requirements.txt --break-system-packages
 
-# 2. check the camera works (saves data/captures/camera_test.jpg, mock=False)
+# 3. Check the camera (saves data/captures/camera_test.jpg)
 python3 scripts/test_camera.py
 
-# 3. run the app
+# 4. Run HydroScan
 python3 main.py
 ```
 
-`HydroScan / System Ready` shows on the LCD (or as a console box if the LCD isn't
-wired). Press the button — or **ENTER** if the button isn't wired — and it scans
-a real frame and reports e.g. `HIGH  74%  n=74`.
+### Run modes
 
-Annotated output images and a `scan_log.jsonl` appear in `data/results/`.
+| Command | What it does |
+|:--------|:-------------|
+| `python3 main.py` | Interactive mode. Type `scan` to take a reading. |
+| `python3 main.py --button` | Uses the physical push button to start each scan. |
+| `python3 main.py --once` | Takes one scan, prints the result, then exits. |
+| `python3 main.py --image <path>` | Analyses a saved image. No camera needed. |
+| `./run.sh` | Shortcut for `python3 main.py` (accepts the same flags). |
 
-**Camera colours look wrong?** Reset them (clears a stuck white balance):
+### Interactive commands
 
-```bash
-python3 scripts/reset_camera.py
-```
+At the `hydroscan>` prompt:
 
-**Re-analyse an already-saved capture (no camera needed):**
-
-```bash
-python3 main.py --image data/captures/<some-saved-scan>.jpg
-```
+| Command | Action |
+|:--------|:-------|
+| `scan` / `s` | Take a reading |
+| `reset` / `r` | Reset camera colours (auto white balance) |
+| `calib` / `c` | Run calibration |
+| `quit` / `q` | Exit |
 
 ---
 
-## 3. Full setup on the Raspberry Pi (with hardware)
+## 🔌 Hardware Setup
 
-### 3.1 Flash the OS
+### 1. Flash the OS
 
-1. Install **Raspberry Pi Imager** on your PC.
-2. Flash **Raspberry Pi OS (64-bit, Bookworm)** to a microSD card (16 GB+).
-3. In Imager's settings (gear icon) enable **SSH**, set a username/password and
-   your Wi-Fi — this lets you work headless.
+1. Install **Raspberry Pi Imager** on your computer.
+2. Flash **Raspberry Pi OS (64-bit)** to a microSD card (16 GB or larger).
+3. In Imager's settings, enable **SSH** and enter your Wi-Fi details.
 4. Boot the Pi from the card.
 
-### 3.2 Enable the camera and I2C
+### 2. Enable I2C (for the LCD)
 
 ```bash
-sudo raspi-config
+sudo raspi-config        # Interface Options → I2C → Enable
+sudo reboot
 ```
 
-* **Interface Options → I2C → Enable**  (for the LCD)
-* The Camera v3 works out of the box on Bookworm via `libcamera`; no toggle
-  needed. Verify with `libcamera-hello --list-cameras`.
-
-Reboot: `sudo reboot`.
-
-### 3.3 Get the code onto the Pi
-
-Copy this whole `HydroScan` folder to `/home/pi/HydroScan` (USB stick, `scp`, or
-`git clone`). Then:
+The Camera v3 works out of the box. Check it with:
 
 ```bash
-cd /home/pi/HydroScan
-pip install -r requirements.txt --break-system-packages
+libcamera-hello --list-cameras
 ```
 
-`picamera2`, `RPi.GPIO`, and `smbus2` ship with Raspberry Pi OS; the rest install
-from the file.
+### 3. Wiring
 
-### 3.4 Wire the hardware
+All pins use **BCM numbering** and can be changed in `config.py`.
 
-Pins use **BCM numbering** and are set in `config.py` (change them there if you
-wire differently).
-
-| Part | Connects to | Notes |
-|------|-------------|-------|
-| **Camera v3 NOIR** | CSI ribbon port | blue side faces the Ethernet/USB jacks |
-| **I2C LCD (16×2)** | SDA→GPIO2 (pin 3), SCL→GPIO3 (pin 5), VCC→5V, GND→GND | address usually `0x27` (some are `0x3F`) |
-| **Push button** | one leg → GPIO17 (pin 11), other leg → GND | uses internal pull-up |
-| **White LED / strip** | control → GPIO27 (pin 13), via a resistor (single LED) or a MOSFET gate (strip) | strip needs its own power + a transistor |
-| **Power** | USB-C power bank → Pi USB-C | |
+| Component | Connection | Notes |
+|:----------|:-----------|:------|
+| **Camera v3 NOIR** | CSI ribbon port | Blue side faces the Ethernet/USB ports |
+| **16×2 I2C LCD** | SDA → GPIO2 (pin 3)<br>SCL → GPIO3 (pin 5)<br>VCC → 5V · GND → GND | Address is usually `0x27` (sometimes `0x3F`) |
+| **Push button** | GPIO17 (pin 11) → button → GND | Uses the internal pull-up |
+| **White LED / strip** | GPIO27 (pin 13) | Use a resistor for one LED, or a MOSFET for a strip |
+| **Power** | USB-C power bank → Pi | |
 
 Find your LCD's I2C address:
 
 ```bash
 sudo apt install -y i2c-tools
-i2cdetect -y 1     # note the address shown, set LCD_I2C_ADDRESS in config.py
+i2cdetect -y 1           # set LCD_I2C_ADDRESS in config.py to the value shown
 ```
 
-### 3.5 Test each part individually
+### 4. Test each part
 
 ```bash
-python3 scripts/test_lcd.py          # cycles status messages on the LCD
-python3 scripts/test_camera.py       # saves data/captures/camera_test.jpg
-python3 scripts/test_button_led.py   # press button -> LED blinks
+python3 scripts/test_lcd.py          # shows test messages on the LCD
+python3 scripts/test_camera.py       # saves a test photo
+python3 scripts/test_button_led.py   # press the button → LED blinks
 ```
 
-Each script prints `mock=True/False` so you can confirm the real hardware was
-detected.
-
-### 3.6 Run HydroScan
-
-```bash
-python3 main.py
-```
-
-Place a water sample in the chamber, press the button, read the LCD.
+Each script prints `mock=True` or `mock=False`, so you can confirm the real hardware was detected.
 
 ---
 
-## 4. Autostart on boot (optional)
+## 🔁 Run on Boot
 
 ```bash
 sudo cp systemd/hydroscan.service /etc/systemd/system/
 sudo systemctl daemon-reload
-sudo systemctl enable hydroscan
-sudo systemctl start hydroscan
-journalctl -u hydroscan -f          # watch the logs
+sudo systemctl enable --now hydroscan
+journalctl -u hydroscan -f           # watch the logs
 ```
 
-Edit `User=` / paths in the service file if your username or folder differ.
+> The service runs as user `pi` from `/home/pi/HydroScan` in button mode. Edit `User=` and the paths in the service file if yours are different.
 
 ---
 
-## 5. How detection works (v2 pipeline)
+## 🔬 Detection Pipeline
 
-`hydroscan/detector.py` runs this pipeline on each frame:
+`hydroscan/detector.py` runs these steps on every frame:
 
-1. **Grayscale + ROI crop** — analyse only the water (`config.ROI`).
-2. **CLAHE illumination fix** — evens out the LED lighting so corners and
-   centre threshold identically.
-3. **Glare masking** — LED reflections (big saturated blobs) are detected and
-   excluded so they're never counted as particles.
-4. **White top-hat + adaptive threshold** — two independent detectors ANDed
-   together; a pixel must look like a particle to both, which kills most noise.
-5. **Watershed splitting** — touching particles are separated with a
-   distance-transform watershed, so two specks stuck together count as two.
-6. **Per-particle plastic scoring** — every blob gets a 0–1 "plastic score"
-   from colour (bright/whitish vs brown/green), solidity and shape. Organic
-   debris and sediment are excluded from the count (shown orange in the
-   annotated image; counted plastic is green).
-7. **Multi-frame aggregation** — median count + averaged features across all
-   frames that pass the quality gate.
+| # | Step | Purpose |
+|:-:|:-----|:--------|
+| 1 | **Grayscale + ROI crop** | Analyse only the water area (`config.ROI`) |
+| 2 | **CLAHE** | Even out uneven LED lighting |
+| 3 | **Glare masking** | Remove LED reflections so they aren't counted |
+| 4 | **Top-hat + adaptive threshold** | Two detectors combined, so a pixel must pass both; cuts noise |
+| 5 | **Watershed splitting** | Separate particles that are touching |
+| 6 | **Plastic scoring** | Score each particle 0–1 by colour, shape and solidity; exclude sand and organic matter |
+| 7 | **Multi-frame aggregation** | Median count and averaged features across good frames |
 
-A **quality gate** (`assess_quality`) still rejects blurry / too-dark /
-over-exposed frames before they're counted.
+A **quality gate** rejects blurry, too-dark or over-exposed frames before counting.
 
-### Classification: trained ML model with a safe fallback
+In the annotated output image, **green** boxes are counted plastic and **orange** boxes are excluded debris.
 
-`hydroscan/classifier.py` first tries the trained Random Forest at
-`ml/model.joblib` (500 labelled images, 5 classes, ~88% held-out accuracy and
-100% recall on HIGH). Its `predict_proba` becomes the confidence, and a
-`non_plastic` verdict tells you the sample is mostly sand/organic debris.
+---
 
-If the model file or scikit-learn is missing, it falls back automatically to
-the transparent threshold rules:
+## 🤖 Machine Learning
+
+`hydroscan/classifier.py` loads the trained **Random Forest** at `ml/model.joblib`.
+
+| Property | Value |
+|:---------|:------|
+| Classes | `clean` · `low` · `medium` · `high` · `non_plastic` |
+| Training data | 500 images (100 per class) |
+| Held-out accuracy | ~88% |
+| Recall on HIGH | 100% |
+
+If the model or scikit-learn is missing, it **falls back automatically** to simple rules:
 
 ```
-count < 20    -> LOW
-count < 60    -> MEDIUM
-else          -> HIGH
-
-percent = min(count / PERCENT_FULL_SCALE_COUNT * 100, 100)
+count < 20  → LOW
+count < 60  → MEDIUM
+otherwise   → HIGH
 ```
 
-So a scan reports e.g. `HIGH  74%  n=74` on the LCD, in the log, and in the
-phone app. Set `USE_ML_MODEL = False` in `config.py` to force the rules.
+Set `USE_ML_MODEL = False` in `config.py` to always use the rules.
 
-> **What the % means.** It's a *relative contamination index*, not a literal
-> "this much of the water is plastic" — no low-cost optical method can measure
-> that. A count equal to `PERCENT_FULL_SCALE_COUNT` (default 100) reads as 100%.
-> Set that constant in `config.py` to the dirtiest sample you realistically
-> expect, so the scale is meaningful for your water source.
-
-All these numbers live in `config.py` — tune them against real samples.
-
-## 5b. Recommended operating system (and the VNC fix)
-
-Use **Raspberry Pi OS** — not Ubuntu/DietPi — because `picamera2`, `RPi.GPIO`,
-and the I2C tools this code needs all ship with it. For a lightweight setup that
-also works cleanly with **RealVNC Viewer**, you have two good options:
-
-* **Easiest VNC + lightest: Raspberry Pi OS (Legacy, 64-bit) "Bullseye" with
-  desktop.** In Raspberry Pi Imager choose *Raspberry Pi OS (Legacy, 64-bit)*.
-  It still uses **X11** and bundles the classic **RealVNC Server**, so RealVNC
-  Viewer connects with no extra steps. `picamera2` works here too.
-
-* **Current "Bookworm" + RealVNC:** Bookworm switched the desktop to **Wayland**,
-  and that's why RealVNC Viewer stopped connecting — RealVNC Server was dropped
-  from the image. Fix it one of two ways:
-  1. Switch back to X11: `sudo raspi-config` → *Advanced Options* → *Wayland* →
-     select **X11**, reboot, then enable VNC in *Interface Options*. RealVNC
-     Viewer then works as before.
-  2. Or keep Wayland and connect to the built-in **wayvnc** server (enable VNC in
-     `raspi-config`). With older wayvnc you must **disable authentication** for
-     RealVNC Viewer to connect, because wayvnc uses VeNCrypt/TLS that RealVNC
-     Viewer doesn't support.
-
-For a truly minimal, headless box you could use **Raspberry Pi OS Lite** (no
-desktop) and skip VNC entirely — SSH in and run `python3 main.py`. But since you
-want VNC, pick one of the desktop options above.
-
-If your goal is just "lightweight and it runs this code," **Bullseye Legacy with
-desktop** is the path of least resistance.
-
----
-
-## 6. Tuning tips
-
-* **Too many particles detected** (everything reads HIGH): raise
-  `MIN_PARTICLE_AREA`, raise `ADAPTIVE_C`, or tighten the `ROI`.
-* **Missing real particles** (everything reads LOW): lower `ADAPTIVE_C`, lower
-  `MIN_PARTICLE_AREA`.
-* **LED reflections counted as particles**: tighten the `ROI` and/or lower
-  `MAX_PARTICLE_AREA`; reposition the LEDs to the sides, not facing the camera.
-* **Frames rejected as blurry**: lower `QUALITY_MIN_FOCUS` or improve focus/lighting.
-
-Force a mode regardless of hardware by setting `RUN_MODE` in `config.py` to
-`"mock"` or `"hardware"` (default `"auto"`).
-
----
-
-## 7. Where the data goes
-
-* `data/captures/` — raw image from each scan (`scan_YYYYMMDD_HHMMSS.jpg`).
-* `data/results/annotated_*.jpg` — same image with green boxes on detected particles.
-* `data/results/scan_log.jsonl` — one JSON line per scan (timestamp, count, level,
-  features). Easy to load into Excel/pandas later.
-
----
-
-## 8. Machine learning — now live
-
-The device ships with a trained Random Forest (`ml/model.joblib`) built from
-**100 labelled images per class** (clean / low / medium / high / non_plastic,
-500 total in `ml/dataset/`). The images are synthetic but realistic: uneven
-LED lighting, glare spots, air bubbles, mixed debris, focus variation.
-
-**Retrain any time** (e.g. after replacing synthetic images with real captures
-from `data/captures/`):
+### Retrain the model
 
 ```bash
-python3 scripts/generate_ml_dataset.py            # regen synthetic (100/class)
-python3 ml/extract_features.py --dataset ml/dataset --out ml/features.csv
-python3 ml/train_model.py --features ml/features.csv --out ml/model.joblib
+python3 scripts/generate_ml_dataset.py                                     # 1. make a dataset
+python3 ml/extract_features.py --dataset ml/dataset --out ml/features.csv  # 2. extract features
+python3 ml/train_model.py --features ml/features.csv --out ml/model.joblib # 3. train
 ```
 
-The app picks up the new model on next start — no code changes. See
-[`ml/README.md`](ml/README.md) for the roadmap to real-photo training and
-TFLite.
+The app uses the new model the next time it starts. To train on real photos, sort your captures from `data/captures/` into `ml/dataset/<class>/` and run steps 2–3. See [`ml/README.md`](ml/README.md) for more.
+
+> **What the % means:** it's a *relative contamination index*, not the literal share of plastic in the water. A count equal to `PERCENT_FULL_SCALE_COUNT` (default 100) reads as 100%.
 
 ---
 
-## 9. Phone app (Wi-Fi + Bluetooth)
+## 🛠️ Configuration & Tuning
 
-The Pi hosts its own Wi-Fi hotspot and serves a full phone app: **live video
-feed of the water, one-tap scan, contamination % gauge, history** — and the
-physical button keeps working at the same time.
+Every setting is in **`config.py`**.
 
-### One-time setup on the Pi
-
-```bash
-sudo bash scripts/setup_hotspot.sh     # Pi broadcasts Wi-Fi "HydroScan"
-```
-
-### Every use
-
-```bash
-python3 main.py --serve                # or enable the systemd service
-```
-
-On your phone: join Wi-Fi **HydroScan** (password `hydroscan123`, change it in
-`scripts/setup_hotspot.sh`), then open **http://10.42.0.1:8080** in Chrome.
-Tap *Add to Home screen* to install it as an app (icon, fullscreen, offline
-shell).
-
-If the Pi is on your home Wi-Fi instead of hotspot mode, use
-`http://<pi-ip>:8080` — everything else is identical.
-
-### Native Android app (optional)
-
-`android/` contains a complete Android Studio project that wraps the same UI
-in a real installable APK — see [`android/README.md`](android/README.md) for
-the 3-step build.
-
-### Bluetooth (optional)
-
-`scripts/ble_service.py` advertises the device as **HydroScan** over Bluetooth
-LE and serves the latest scan result (JSON) to any BLE app — useful for
-discovering the device before joining its Wi-Fi. Live video always travels
-over Wi-Fi; BLE bandwidth is far too small for video.
-
-```bash
-sudo apt install -y python3-dbus bluez
-pip install bluezero --break-system-packages
-python3 scripts/ble_service.py                     # or hydroscan-ble.service
-```
+| Problem | Fix |
+|:--------|:----|
+| Everything reads **HIGH** | Raise `MIN_PARTICLE_AREA` or `ADAPTIVE_C`, or make the `ROI` smaller |
+| Everything reads **LOW** | Lower `ADAPTIVE_C` or `MIN_PARTICLE_AREA` |
+| LED reflections counted | Make the `ROI` smaller, lower `MAX_PARTICLE_AREA`, or move the LEDs to the sides |
+| Frames rejected as blurry | Lower `QUALITY_MIN_FOCUS`, or improve focus and lighting |
+| Want to force mock/real hardware | Set `RUN_MODE` to `"mock"` or `"hardware"` (default `"auto"`) |
 
 ---
 
-## 10. Bill of materials (~₹8,000)
+## 📊 Output Data
+
+| Location | Contents |
+|:---------|:---------|
+| `data/captures/` | Raw image from each scan (`scan_YYYYMMDD_HHMMSS.jpg`) |
+| `data/results/annotated_*.jpg` | Same image with particles boxed |
+| `data/results/scan_log.jsonl` | One JSON line per scan (time, count, level, features). Opens easily in Excel or pandas. |
+
+---
+
+## 🧯 Troubleshooting
+
+**Camera colours look wrong.** Reset the white balance:
+
+```bash
+python3 scripts/reset_camera.py
+```
+
+**LCD shows nothing.** Check the address with `i2cdetect -y 1` and set `LCD_I2C_ADDRESS` in `config.py`.
+
+**RealVNC Viewer won't connect (Bookworm).** Bookworm uses Wayland by default. Go to `sudo raspi-config` → *Advanced Options* → *Wayland* → choose **X11**, reboot, then enable VNC under *Interface Options*. Or use **Raspberry Pi OS (Legacy) Bullseye**, which uses X11 by default.
+
+---
+
+## 💰 Bill of Materials
 
 | Component | Cost (₹) |
-|-----------|---------:|
-| Raspberry Pi 4 | 4000 |
-| Camera v3 NOIR | 2500 |
+|:----------|---------:|
+| Raspberry Pi 4 | 4,000 |
+| Camera Module v3 NOIR | 2,500 |
 | 16×2 I2C LCD | 250 |
 | White LEDs | 200 |
 | Power components | 300 |
 | Enclosure | 300 |
 | Miscellaneous | 450 |
-| **Total** | **~8000** |
+| **Total** | **≈ 8,000** |
 
 ---
 
-*HydroScan is a preliminary screening tool, not a laboratory instrument. A HIGH
-reading means "investigate further," not a certified contamination measurement.*
+## 👥 Team
+
+| Member | Role |
+|:-------|:-----|
+| **Anay Mehta** | System architecture, machine learning and software. Designed the optical analysis pipeline, trained the model, and integrated hardware with software. |
+| **Yuvraj Nikum** | Hardware and prototyping. Led the enclosure design, optical chamber, illumination layout and electronics. |
+
+---
+
+## 📄 License
+
+This project is proprietary. All rights reserved © 2025–26 Anay Mehta & Yuvraj Nikum.
+
+---
+
+<div align="center">
+<sub>⚠️ HydroScan is a <b>screening tool</b>, not a laboratory instrument. A HIGH reading means "investigate further," not a certified measurement.</sub>
+</div>
