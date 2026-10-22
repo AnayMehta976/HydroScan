@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="w" x1="0.3" y1="0" x2="0.7" y2="1">
+      <stop offset="0" stop-color="#5cd6f5"/>
+      <stop offset="0.55" stop-color="#1f86e8"/>
+      <stop offset="1" stop-color="#0f4aa8"/>
+    </linearGradient>
+  </defs>
+  <!-- Water drop -->
+  <path d="M32 3.5C32 3.5 11 27.5 11 41.5a21 21 0 0 0 42 0C53 27.5 32 3.5 32 3.5Z" fill="url(#w)" stroke="#0b2236" stroke-width="3" stroke-linejoin="round"/>
+  <!-- Highlight -->
+  <path d="M20.5 38.5c0-6 4-12.5 7.5-17" fill="none" stroke="#ffffff" stroke-opacity=".75" stroke-width="3.2" stroke-linecap="round"/>
+  <!-- Suspended particles -->
+  <circle cx="37" cy="36" r="3" fill="#ffffff"/>
+  <circle cx="28" cy="50" r="2.4" fill="#ffffff"/>
+  <circle cx="42" cy="49" r="2.6" fill="#ff9a2e"/>
+  <!-- Detector box around one particle -->
+  <path d="M32.2 33.6v-2.8h2.8M41.8 38.4v2.8h-2.8" fill="none" stroke="#e8fbff" stroke-width="1.8" stroke-linecap="round"/>
+</svg>
