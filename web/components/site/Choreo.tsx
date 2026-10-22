@@ -133,15 +133,15 @@ export default function Choreo() {
           tag.textContent = `detected 1/${words.length}`;
           const swap = (i: number) => {
             const dir = i > cur ? 1 : -1;
-            gsap.to(words[cur], { opacity: 0, yPercent: -45 * dir, duration: 0.3, ease: "power2.in", overwrite: true });
-            gsap.fromTo(words[i], { opacity: 0, yPercent: 45 * dir }, { opacity: 1, yPercent: 0, duration: 0.4, ease: "power3.out", overwrite: true });
-            gsap.to(box, { width: words[i].offsetWidth + 32, duration: 0.45, ease: "power3.out", overwrite: true });
+            gsap.to(words[cur], { opacity: 0, yPercent: -35 * dir, duration: 0.45, ease: "power2.in", overwrite: true });
+            gsap.fromTo(words[i], { opacity: 0, yPercent: 35 * dir }, { opacity: 1, yPercent: 0, duration: 0.7, delay: 0.2, ease: "power3.out", overwrite: true });
+            gsap.to(box, { width: words[i].offsetWidth + 32, duration: 0.7, delay: 0.1, ease: "power3.inOut", overwrite: true });
             gsap.fromTo(box, { scale: 1.06 }, { scale: 1, duration: 0.4, ease: "power2.out" });
             tag.textContent = `detected ${i + 1}/${words.length}`;
             cur = i;
           };
           ScrollTrigger.create({
-            trigger: "[data-found-pin]", start: "top top", end: `+=${words.length * 38}%`, pin: true, anticipatePin: 1,
+            trigger: "[data-found-pin]", start: "top top", end: `+=${words.length * 85}%`, pin: true, anticipatePin: 1,
             onUpdate: (self) => {
               const i = Math.min(words.length - 1, Math.floor(self.progress * words.length));
               if (i !== cur) swap(i);
