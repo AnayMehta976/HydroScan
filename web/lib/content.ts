@@ -42,8 +42,8 @@ export const steps = [
   },
   {
     title: "Light it up",
-    short: "White LED strips",
-    body: "LEDs light the sample from the sides. Plastic particles scatter and refract light differently from the water around them, so they glow against the dark.",
+    short: "One LED strip on three walls",
+    body: "A single white LED strip runs along three inside walls at water level and lights the sample from the sides. Plastic particles scatter and refract light differently from the water around them, so they glow against the dark.",
   },
   {
     title: "Capture",

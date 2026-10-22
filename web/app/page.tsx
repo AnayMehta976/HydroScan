@@ -136,7 +136,7 @@ export default function Home() {
           </div>
           <div data-how-pin>
             <div className="wrap how__layout">
-              <Diagram />
+              <div className="diagram-card"><Diagram /></div>
               <ol className="steps">
                 {steps.map((s, i) => (
                   <li className={`step${i === 0 ? " on" : ""}`} key={s.title}>
