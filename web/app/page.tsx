@@ -434,6 +434,7 @@ export default function Home() {
           <h2 className="display h2">Clean water starts with knowing what’s in it.</h2>
           <div className="footer__actions">
             <a className="btn" href={links.github} target="_blank" rel="noreferrer">View the code</a>
+            <a className="btn btn--ghost" href="/HydroScan_Technical_Project_File.pdf" target="_blank" rel="noreferrer">Read the project file (PDF)</a>
             <a className="btn btn--ghost" href={links.youtube} target="_blank" rel="noreferrer">Watch the demo</a>
           </div>
           <div className="footer__base">
