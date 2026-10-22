@@ -7,6 +7,7 @@ import DemoVideo from "@/components/site/DemoVideo";
 import Vial from "@/components/site/Vial";
 import ScanSim from "@/components/site/ScanSim";
 import LoupePhoto from "@/components/site/LoupePhoto";
+import Build from "@/components/site/Build";
 import {
   links, foundIn, comparison, steps, pipeline, levels, modelStats, modelClasses,
   features, bom, validation, users, business, team,
@@ -260,6 +261,22 @@ export default function Home() {
               </div>
             </div>
             <ScanSim />
+          </div>
+        </section>
+
+        {/* ================= THE BUILD ================= */}
+        <section className="paper section" id="build">
+          <div className="wrap">
+            <div className="head">
+              <div>
+                <h2 className="display h2">The build</h2>
+                <p className="lede muted">Every main part of the prototype, pulled apart and labelled. Drag the model to turn it around.</p>
+              </div>
+              <span className="head__meta">exploded view, 10 parts</span>
+            </div>
+          </div>
+          <div data-build-pin>
+            <div className="wrap"><Build /></div>
           </div>
         </section>
 

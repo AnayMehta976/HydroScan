@@ -378,6 +378,42 @@ a { color: inherit; }
 .parts div:first-child { border-top: 0; }
 .parts b { font-weight: 600; }
 
+/* ---------- The build (exploded view) ---------- */
+.build__stage {
+  position: relative; height: clamp(460px, calc(100svh - 200px), 760px);
+  border: 1.5px solid var(--ink); border-radius: var(--r); overflow: hidden;
+  background:
+    radial-gradient(70% 60% at 50% 45%, rgba(247, 250, 253, .95), rgba(237, 243, 248, .55) 70%, rgba(237, 243, 248, 0)),
+    var(--card);
+  touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none;
+}
+.build__stage:active { cursor: grabbing; }
+.build__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity .6s; }
+.build__stage.is-ready .build__canvas { opacity: 1; }
+.build__lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.build__lines polyline { fill: none; stroke: var(--ink); stroke-width: 1.3; transition: opacity .35s; }
+.build__lines circle { fill: var(--blue); stroke: #fff; stroke-width: 1.5; transition: opacity .35s; }
+.build__labels { position: absolute; inset: 0; pointer-events: none; }
+.build__labels .bl {
+  position: absolute; left: 0; top: 0; width: 262px; height: 50px; opacity: 0;
+  display: grid; grid-template-columns: 34px 1fr; gap: 10px; align-items: center;
+  padding: 6px 10px 6px 6px; border-radius: 12px; background: rgba(247, 250, 253, .94);
+  border: 1.5px solid var(--ink); transition: opacity .35s;
+}
+.bl b { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--blue); color: #fff; font-family: var(--lcdfont); font-size: 1.3rem; font-weight: 400; }
+.bl strong { display: block; font-family: var(--display); font-weight: 650; font-size: 1rem; letter-spacing: -0.01em; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bl small { display: block; font-size: .78rem; color: var(--ink-2); line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bm { position: absolute; left: 0; top: 0; width: 26px; height: 26px; border-radius: 50%; display: none; place-items: center; background: var(--blue); color: #fff; font-family: var(--lcdfont); font-size: 1.15rem; border: 2px solid #fff; box-shadow: 0 2px 8px rgba(11, 34, 54, .3); opacity: 0; transition: opacity .3s, transform .3s; }
+.build__foot { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 10px; }
+.build__hint { font-size: .88rem; font-weight: 600; color: var(--ink-2); }
+.build__block { margin: 0; display: grid; grid-template-columns: repeat(3, auto); border: 1.5px solid var(--ink); border-radius: 8px; overflow: hidden; background: rgba(247, 250, 253, .94); font-size: .74rem; pointer-events: none; }
+.build__block div { display: grid; grid-template-columns: auto auto; border-left: 1px solid var(--rule); }
+.build__block div:first-child { border-left: 0; }
+.build__block dt { padding: 4px 8px; color: var(--ink-2); font-weight: 600; border-right: 1px solid var(--rule); }
+.build__block dd { margin: 0; padding: 4px 10px; font-family: var(--lcdfont); font-size: 1rem; line-height: 1.05; }
+.build__toggle { display: none; margin: 14px auto 0; min-height: 46px; font-size: .95rem; }
+.build__legend { display: none; }
+
 /* ---------- Field tray (horizontal glass slides) ---------- */
 .tray { overflow: hidden; }
 .tray__track { display: flex; gap: clamp(16px, 2vw, 26px); width: max-content; padding: 0 var(--gutter); will-change: transform; }
@@ -482,6 +518,18 @@ a { color: inherit; }
   .users { grid-template-columns: 1fr 1fr; }
   .money { grid-template-columns: 1fr 1fr; }
   .table-card th, .table-card td { padding: 12px 12px; font-size: .92rem; }
+}
+
+@media (max-width: 899px) {
+  .build__stage { height: min(118vw, 560px); }
+  .build__labels { inset: 0; }
+  .build__labels .bl, .build__lines, .build__foot { display: none; }
+  .bm { display: grid; }
+  .build__toggle { display: flex; width: fit-content; }
+  .build__legend { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; list-style: none; margin: 18px 0 0; padding: 0; }
+  .build__legend li { display: grid; grid-template-columns: 26px 1fr; gap: 8px; align-items: start; font-size: .88rem; color: var(--ink-2); }
+  .build__legend b { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--blue); color: #fff; font-family: var(--lcdfont); font-size: 1.1rem; font-weight: 400; }
+  .build__legend strong { display: block; color: var(--ink); font-size: .95rem; }
 }
 
 @media (max-width: 480px) {

@@ -208,6 +208,14 @@ export default function Choreo() {
           gsap.fromTo(card.querySelectorAll(".vial-dot"), { opacity: 0, scale: 0, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, stagger: { each: 0.02, from: "random" }, ease: "back.out(2)", scrollTrigger: st });
         });
 
+        /* ---------- The build: scroll explodes the 3D model ---------- */
+        if (desktop && q("[data-build-pin]")) {
+          ScrollTrigger.create({
+            trigger: "[data-build-pin]", start: "center center+=30", end: "+=230%", pin: true, anticipatePin: 1, scrub: true,
+            onUpdate: (self) => window.dispatchEvent(new CustomEvent("build:progress", { detail: self.progress })),
+          });
+        }
+
         /* ---------- Field tray: horizontal glass slides ---------- */
         const track = q("[data-tray-track]");
         if (desktop && track) {

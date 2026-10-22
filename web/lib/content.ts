@@ -9,7 +9,7 @@ export const navItems = [
   { id: "how", label: "How it works" },
   { id: "pipeline", label: "Pipeline" },
   { id: "try", label: "Try a scan" },
-  { id: "prototype", label: "Prototype" },
+  { id: "build", label: "The build" },
   { id: "business", label: "Business" },
   { id: "team", label: "Team" },
 ];
