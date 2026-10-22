@@ -25,8 +25,8 @@ export default function Diagram() {
         <rect className="thin" x="194" y="120" width="16" height="12" />
       </g>
       <g className="g-pulse">
-        <circle cx="118" cy="115" r="24" fill="none" stroke="#0b7a43" strokeWidth="1.5" strokeDasharray="4 5" />
-        <circle cx="118" cy="115" r="34" fill="none" stroke="#0b7a43" strokeWidth="1" strokeDasharray="2 6" opacity=".6" />
+        <circle cx="118" cy="115" r="24" fill="none" stroke="#1663d6" strokeWidth="1.5" strokeDasharray="4 5" />
+        <circle cx="118" cy="115" r="34" fill="none" stroke="#1663d6" strokeWidth="1" strokeDasharray="2 6" opacity=".6" />
       </g>
       <path className="thin" d="M210 120 C238 120 240 150 252 160" />
 
@@ -48,7 +48,7 @@ export default function Diagram() {
       </g>
 
       {/* Camera field of view */}
-      <polygon className="g-fov" points={`${lens[0]},${lens[1]} 157,428 383,428`} fill="rgba(57,225,122,.07)" stroke="#0b7a43" strokeWidth="1.2" strokeDasharray="5 5" />
+      <polygon className="g-fov" points={`${lens[0]},${lens[1]} 157,428 383,428`} fill="rgba(22,99,214,.07)" stroke="#1663d6" strokeWidth="1.2" strokeDasharray="5 5" />
 
       {/* LED light into the water */}
       <g className="g-rays" stroke="#e08a1e" strokeWidth="1.6" fill="none">

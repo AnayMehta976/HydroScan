@@ -150,7 +150,7 @@ export default function Home() {
         </section>
 
         {/* ================= DEMO ================= */}
-        <section className="dark section" id="demo" data-field>
+        <section className="dark deep section" id="demo">
           <div className="wrap">
             <div className="head">
               <h2 className="display h2">See it scan</h2>
@@ -161,7 +161,7 @@ export default function Home() {
         </section>
 
         {/* ================= PIPELINE ================= */}
-        <section className="dark section" id="pipeline" data-field>
+        <section className="dark deep section" id="pipeline">
           <div className="wrap">
             <div className="head">
               <div>
@@ -251,7 +251,7 @@ export default function Home() {
         </section>
 
         {/* ================= SIMULATOR ================= */}
-        <section className="dark section" id="try" data-field>
+        <section className="dark deep section" id="try">
           <div className="wrap">
             <div className="head">
               <div>
@@ -307,7 +307,7 @@ export default function Home() {
         </section>
 
         {/* ================= FIELD TRAY ================= */}
-        <section className="dark section tray" id="field" data-tray-section data-field>
+        <section className="dark deep section tray" id="field" data-tray-section>
           <div className="wrap">
             <div className="head">
               <h2 className="display h2">Built for the field, not the lab</h2>

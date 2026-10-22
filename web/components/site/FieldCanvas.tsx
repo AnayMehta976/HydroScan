@@ -7,8 +7,8 @@ type P = {
   plastic: boolean; glow: number; phase: number; score: number;
 };
 
-const SWEEP_MS = 6500;
-const PAUSE_MS = 1600;
+const SWEEP_MS = 8000;
+const PAUSE_MS = 3500;
 
 /**
  * Fixed dark-field background shared by the hero lens and every dark section.
@@ -35,12 +35,12 @@ export default function FieldCanvas() {
     let visible = true;
 
     const seed = () => {
-      const n = Math.min(lowPower ? 70 : 150, Math.round((w * h) / (lowPower ? 6000 : 8500)));
+      const n = Math.min(lowPower ? 80 : 190, Math.round((w * h) / (lowPower ? 5000 : 6200)));
       ps = Array.from({ length: n }, () => {
         const plastic = Math.random() > 0.18;
         return {
           x: Math.random() * w, y: Math.random() * h,
-          vx: (Math.random() - 0.5) * 0.06, vy: -0.015 - Math.random() * 0.05,
+          vx: (Math.random() - 0.5) * 0.03, vy: -0.008 - Math.random() * 0.025,
           r: plastic ? 0.7 + Math.random() * Math.random() * 2.3 : 1.8 + Math.random() * 1.8,
           plastic, glow: 0, phase: Math.random() * Math.PI * 2,
           score: plastic ? 0.62 + Math.random() * 0.35 : 0.12 + Math.random() * 0.24,
@@ -66,7 +66,7 @@ export default function FieldCanvas() {
 
     const box = (p: P) => {
       const s = p.r * 3 + 6;
-      const c = p.plastic ? "57,225,122" : "255,154,46";
+      const c = p.plastic ? "92,214,245" : "255,170,90";
       const a = Math.min(0.7, p.glow * 1.1);
       ctx.strokeStyle = `rgba(${c},${a})`;
       ctx.lineWidth = 1.2;
@@ -101,7 +101,7 @@ export default function FieldCanvas() {
       for (const p of ps) {
         if (!still) {
           p.phase += dt * 0.0008;
-          p.x += p.vx * dt * 0.06 + Math.sin(p.phase) * 0.035;
+          p.x += p.vx * dt * 0.06 + Math.sin(p.phase) * 0.018;
           p.y += p.vy * dt * 0.06;
           if (p.y < -8) p.y = h + 8;
           if (p.x < -8) p.x = w + 8;
@@ -111,7 +111,7 @@ export default function FieldCanvas() {
         } else {
           p.glow = Math.random() < 0.25 ? 0.8 : 0;
         }
-        const col = p.plastic ? "214,248,255" : "255,196,130";
+        const col = p.plastic ? "214,244,255" : "255,200,140";
         const base = p.plastic ? 0.18 + p.r * 0.06 : 0.22;
         if (p.glow > 0.04) {
           const gr = p.r * (5 + p.glow * 6);

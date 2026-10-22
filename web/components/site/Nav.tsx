@@ -6,12 +6,12 @@ import { navItems, links } from "@/lib/content";
 export function LensMark({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 32 32" className={className} aria-hidden>
-      <circle cx="16" cy="16" r="13" fill="#02070b" />
+      <circle cx="16" cy="16" r="13" fill="#06263a" />
       <circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" strokeWidth="2" />
       <circle cx="11" cy="12" r="1.6" fill="#cff6ff" />
       <circle cx="19.5" cy="19" r="1.2" fill="#cff6ff" />
       <circle cx="20" cy="11" r="1.6" fill="#ff9a2e" />
-      <path d="M8.2 16.5v-3.2h3.2M23.8 16.5v3.2h-3.2" stroke="#39e17a" strokeWidth="1.6" fill="none" />
+      <path d="M8.2 16.5v-3.2h3.2M23.8 16.5v3.2h-3.2" stroke="#5cd6f5" strokeWidth="1.6" fill="none" />
     </svg>
   );
 }
