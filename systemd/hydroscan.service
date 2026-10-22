@@ -1,0 +1,20 @@
+# HydroScan autostart-on-boot (detection, physical button).
+#   sudo cp systemd/hydroscan.service /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now hydroscan
+# Logs:  journalctl -u hydroscan -f
+# Adjust User= and paths if your username/folder differ.
+
+[Unit]
+Description=HydroScan microplastic scanner
+After=multi-user.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/HydroScan
+ExecStart=/usr/bin/python3 /home/pi/HydroScan/main.py --button
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
