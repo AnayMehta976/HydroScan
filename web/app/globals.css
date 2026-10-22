@@ -628,3 +628,14 @@ a { color: inherit; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+/* Hero: keep the whole intro on screen on short laptop displays */
+.hero .h1 { font-size: clamp(2.6rem, min(7.4vw, 11.2svh), 6.6rem); }
+@media (min-width: 900px) and (max-height: 860px) {
+  .hero .chip { margin-bottom: 0; }
+  .hero .h1 { margin-top: 14px !important; }
+  .hero .lede { margin-top: 12px; }
+  .hero__actions { margin-top: 20px; }
+  .hero__stats { margin-top: 22px; padding-top: 12px; }
+  .hero__lens-col { gap: 24px; }
+}
