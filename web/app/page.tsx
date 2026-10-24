@@ -473,7 +473,7 @@ export default function Home() {
       <footer className="dark footer" data-field>
         <div className="wrap">
           <div className="footer__lens" aria-hidden><Reticle /></div>
-          <h2 className="display h2">Clean water starts with knowing what’s in it.</h2>
+          <h2 className="display h2">Universal access to clean water starts with universal access to water testing.</h2>
           <p className="footer__impact">Already screening the water supply of about <b>900 families</b>.</p>
           <div className="footer__actions">
             <a className="btn" href={links.github} target="_blank" rel="noreferrer">View the code</a>

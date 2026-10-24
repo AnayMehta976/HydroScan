@@ -694,3 +694,4 @@ a { color: inherit; }
 @media (prefers-reduced-motion: reduce) { .impact-band__track { animation: none; } .chip--live .dot { animation: none; } }
 .footer__impact { margin: 18px auto 0; font-size: clamp(1.1rem, 1.8vw, 1.35rem); color: var(--on-field-2); }
 .footer__impact b { color: var(--ink); background: var(--pop); padding: 0 8px; border: 2px solid var(--ink); border-radius: 6px; box-shadow: 3px 3px 0 var(--aqua); font-weight: 800; }
+.footer h2 { max-width: 22ch; }
