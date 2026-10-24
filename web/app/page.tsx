@@ -54,7 +54,7 @@ export default function Home() {
           <div className="hero__paper paper" data-hero-paper />
           <div className="wrap hero__inner">
             <div className="hero__copy" data-hero-copy>
-              <span className="chip"><span className="dot" />Conrad Challenge 2025–26</span>
+              <div className="hero__chips"><span className="chip"><span className="dot" />Conrad Challenge 2025–26</span><a className="chip chip--live" href="#impact"><span className="dot" />In use: ~900 families</a></div>
               <h1 className="display h1" style={{ marginTop: 22 }}>Making microplastic pollution visible.</h1>
               <p className="lede muted">HydroScan is a portable, low-cost optical device that screens water for microplastics right where it’s collected. No lab, no chemicals, no internet.</p>
               <div className="hero__actions">
@@ -64,7 +64,7 @@ export default function Home() {
               <dl className="hero__stats">
                 <div><dt>to build</dt><dd>≈ ₹8,000</dd></div>
                 <div><dt>per test</dt><dd>₹0</dd></div>
-                <div><dt>offline</dt><dd>100%</dd></div>
+                <div className="hero__stat--live"><dt>families screened</dt><dd>~900</dd></div>
               </dl>
             </div>
             <div className="hero__lens-col">
@@ -281,6 +281,47 @@ export default function Home() {
           </div>
         </section>
 
+        {/* ================= IMPACT BAND ================= */}
+        <a className="impact-band" href="#impact" aria-label="In use today: screening the water supply of about 900 families">
+          <div className="impact-band__track" aria-hidden>
+            {Array.from({ length: 2 }, (_, k) => (
+              <span key={k}>
+                {["In use today", "~900 families", "Water supply screened on site", "No lab, no chemicals, no internet"].map((t) => (
+                  <span className="impact-band__item" key={t}>{t}<i /></span>
+                ))}
+              </span>
+            ))}
+          </div>
+        </a>
+
+        {/* ================= IMPACT ================= */}
+        <section className="dark deep section" id="impact">
+          <div className="wrap">
+            <div className="head">
+              <div>
+                <h2 className="display h2">Already in use</h2>
+                <p className="lede">HydroScan has left the workbench. It is screening the water supply of residential complexes that are home to about 900 families.</p>
+              </div>
+              <span className="head__meta">deployed, on site</span>
+            </div>
+            <div className="impact">
+              <div className="impact__stat" data-rise>
+                <span className="impact__num"><span className="impact__tilde">~</span><span data-count={900}>900</span></span>
+                <span className="impact__unit">families</span>
+                <p>whose water supply is being screened by HydroScan, on site, with no samples sent away.</p>
+              </div>
+              <ul className="impact__points">
+                {impact.map((m) => (
+                  <li className="impact__point" data-rise key={m.title}>
+                    <h3>{m.title}</h3>
+                    <p>{m.body}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
+
         {/* ================= PROTOTYPE ================= */}
         <section className="paper section" id="prototype">
           <div className="wrap">
@@ -370,34 +411,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ================= IMPACT ================= */}
-        <section className="dark deep section" id="impact">
-          <div className="wrap">
-            <div className="head">
-              <div>
-                <h2 className="display h2">Already in use</h2>
-                <p className="lede">HydroScan has left the workbench. It is screening the water supply of residential building complexes that are home to about 900 families.</p>
-              </div>
-              <span className="head__meta">deployed, on site</span>
-            </div>
-            <div className="impact">
-              <div className="impact__stat" data-rise>
-                <span className="impact__num"><span className="impact__tilde">~</span><span data-count={900}>900</span></span>
-                <span className="impact__unit">families</span>
-                <p>whose building water supply is being screened by HydroScan, on site, with no samples sent away.</p>
-              </div>
-              <ul className="impact__points">
-                {impact.map((m) => (
-                  <li className="impact__point" data-rise key={m.title}>
-                    <h3>{m.title}</h3>
-                    <p>{m.body}</p>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </section>
-
         {/* ================= BUSINESS ================= */}
         <section className="paper paper--plain section" id="business">
           <div className="wrap">
@@ -461,6 +474,7 @@ export default function Home() {
         <div className="wrap">
           <div className="footer__lens" aria-hidden><Reticle /></div>
           <h2 className="display h2">Clean water starts with knowing what’s in it.</h2>
+          <p className="footer__impact">Already screening the water supply of about <b>900 families</b>.</p>
           <div className="footer__actions">
             <a className="btn" href={links.github} target="_blank" rel="noreferrer">View the code</a>
             <a className="btn btn--ghost" href="/HydroScan_Technical_Project_File.pdf" target="_blank" rel="noreferrer">Read the project file (PDF)</a>

@@ -671,3 +671,26 @@ a { color: inherit; }
 .impact__point p { margin: 6px 0 0; color: var(--on-field-2); }
 @media (max-width: 899px) { .impact { grid-template-columns: 1fr; } }
 .impact__tilde { margin-right: .06em; letter-spacing: 0; }
+
+/* ---------- Impact highlights ---------- */
+.hero__chips { display: flex; flex-wrap: wrap; gap: 10px; }
+.chip--live { text-decoration: none; background: var(--pop); color: var(--ink); }
+.chip--live .dot { background: #12b55a; box-shadow: 0 0 0 0 rgba(18, 181, 90, .6); animation: live 1.6s ease-out infinite; }
+@keyframes live { 0% { box-shadow: 0 0 0 0 rgba(18, 181, 90, .6); } 100% { box-shadow: 0 0 0 9px rgba(18, 181, 90, 0); } }
+.chip--live:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--ink); }
+.hero__stat--live dd { color: var(--blue); }
+
+.impact-band {
+  display: block; position: relative; z-index: 2; overflow: hidden; text-decoration: none; color: var(--ink);
+  background: var(--pop); border-top: var(--bw) solid var(--ink); border-bottom: var(--bw) solid var(--ink);
+  padding: 16px 0;
+}
+.impact-band__track { display: flex; width: max-content; animation: band 28s linear infinite; }
+.impact-band:hover .impact-band__track { animation-play-state: paused; }
+.impact-band__track > span { display: flex; }
+.impact-band__item { display: inline-flex; align-items: center; gap: 28px; padding-right: 28px; white-space: nowrap; font-family: var(--display); font-weight: 800; letter-spacing: -0.02em; text-transform: uppercase; font-size: clamp(1.25rem, 2.6vw, 2rem); }
+.impact-band__item i { width: 14px; height: 14px; border-radius: 50%; background: var(--blue); border: 2px solid var(--ink); display: block; }
+@keyframes band { to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .impact-band__track { animation: none; } .chip--live .dot { animation: none; } }
+.footer__impact { margin: 18px auto 0; font-size: clamp(1.1rem, 1.8vw, 1.35rem); color: var(--on-field-2); }
+.footer__impact b { color: var(--ink); background: var(--pop); padding: 0 8px; border: 2px solid var(--ink); border-radius: 6px; box-shadow: 3px 3px 0 var(--aqua); font-weight: 800; }
