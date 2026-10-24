@@ -11,6 +11,7 @@ import Build from "@/components/site/Build";
 import {
   links, foundIn, comparison, steps, pipeline, levels, modelStats, modelClasses,
   features, bom, validation, users, business, team,
+  impact,
 } from "@/lib/content";
 
 /** Microscope-style reticle used around the lenses. */
@@ -364,6 +365,34 @@ export default function Home() {
               </div>
               <ul className="checks">
                 {validation.map((v) => <li key={v}><Check /><span>{v}</span></li>)}
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        {/* ================= IMPACT ================= */}
+        <section className="dark deep section" id="impact">
+          <div className="wrap">
+            <div className="head">
+              <div>
+                <h2 className="display h2">Already in use</h2>
+                <p className="lede">HydroScan has left the workbench. It is screening the water supply of residential building complexes that are home to about 900 families.</p>
+              </div>
+              <span className="head__meta">deployed, on site</span>
+            </div>
+            <div className="impact">
+              <div className="impact__stat" data-rise>
+                <span className="impact__num"><span className="impact__tilde">~</span><span data-count={900}>900</span></span>
+                <span className="impact__unit">families</span>
+                <p>whose building water supply is being screened by HydroScan, on site, with no samples sent away.</p>
+              </div>
+              <ul className="impact__points">
+                {impact.map((m) => (
+                  <li className="impact__point" data-rise key={m.title}>
+                    <h3>{m.title}</h3>
+                    <p>{m.body}</p>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>

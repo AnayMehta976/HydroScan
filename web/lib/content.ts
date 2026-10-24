@@ -10,6 +10,7 @@ export const navItems = [
   { id: "pipeline", label: "Pipeline" },
   { id: "try", label: "Try a scan" },
   { id: "build", label: "The build" },
+  { id: "impact", label: "Impact" },
   { id: "business", label: "Business" },
   { id: "team", label: "Team" },
 ];
@@ -155,4 +156,10 @@ export const team = [
     body: "Led the entire machine-learning side: designed the OpenCV analysis pipeline that finds and scores each particle, built the synthetic training dataset, and trained and evaluated the Random Forest classifier that turns each image into a Low, Medium or High result.",
     initials: "YN",
   },
+];
+
+export const impact = [
+  { title: "Screening at the source", body: "Tests run inside the complexes, on the same supply the families use every day." },
+  { title: "As often as it is needed", body: "No consumables and no per-test fees, so the supply can be checked again and again without adding cost." },
+  { title: "An early warning", body: "A Medium or High reading flags the supply for proper laboratory testing before a problem goes unnoticed." },
 ];
