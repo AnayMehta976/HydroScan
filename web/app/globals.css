@@ -750,6 +750,12 @@ html.lg.lg-refract :is(.nav__bar, .nav__menu, .btn, .chip, .panel, .table-card, 
    ========================================================================= */
 html.has-drop, html.has-drop * { cursor: none !important; }
 html.has-drop :is(input:not([type='range']):not([type='checkbox']), textarea) { cursor: text !important; }
+/* anything that does something when clicked gets the normal hand pointer */
+html.has-drop :is(a[href], button:not(:disabled), [role='button']:not([aria-disabled='true']), summary, select:not(:disabled),
+  input:is([type='checkbox'], [type='radio'], [type='range'], [type='submit'], [type='button']):not(:disabled),
+  label:has(input:is([type='checkbox'], [type='radio']):not(:disabled))),
+html.has-drop :is(a[href], button:not(:disabled), [role='button']:not([aria-disabled='true']), summary, label:has(input:is([type='checkbox'], [type='radio']):not(:disabled))) * { cursor: pointer !important; }
+.drop-dot { transition: opacity .15s; }
 .drop { position: fixed; left: 0; top: 0; z-index: 10000; pointer-events: none; visibility: hidden; will-change: transform; }
 html.drop-on .drop { visibility: visible; }
 .drop {

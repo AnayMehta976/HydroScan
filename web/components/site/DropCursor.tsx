@@ -7,9 +7,9 @@ import { useEffect, useRef } from "react";
  * - A small dot marks the exact click point; the lens follows it with a little lag.
  * - The lens magnifies whatever is under it and bends it around the rim (an SVG
  *   displacement map in backdrop-filter, Chromium); other browsers get clear glass.
- * - It adapts to what it's over: it swells over anything clickable (sized to the
- *   target), grows with the size of the text under it, and its rim switches between
- *   light and dark backgrounds. It gets optically stronger as it grows.
+ * - It adapts to what it's over: it grows with the size of the text under it, its rim
+ *   switches between light and dark backgrounds, and over anything that does something
+ *   when clicked it drains away and the normal hand pointer takes over.
  * - It stretches with movement, jiggles back to round, sheds droplets on fast flicks,
  *   and squashes on click. Mouse and trackpad only.
  */
@@ -135,7 +135,7 @@ export default function DropCursor() {
       }
 
       // bigger lens, stronger lens
-      if (dispMap && Math.abs(size - lastScale) > 1.5) {
+      if (dispMap && size > 2 && Math.abs(size - lastScale) > 1.5) {
         lastScale = size;
         const strength = 0.7 + 0.3 * Math.min(1, Math.max(0, (size - REST) / (D - REST)));
         dispMap.setAttribute("scale", (D * 1.1 * strength).toFixed(1));
@@ -145,7 +145,9 @@ export default function DropCursor() {
       const ang = (Math.atan2(dy, dx) * 180) / Math.PI;
       const along = 1 + mag, across = 1 / Math.sqrt(1 + mag * 1.6);
       const breathe = reduce ? 0 : Math.sin(now / 420) * 0.02;
-      const s = Math.max(0.05, size / D);
+      const s = Math.max(0.001, size / D);
+      drop.style.opacity = String(Math.min(1, Math.max(0, size / REST)));
+      dot.style.opacity = hover ? "0" : "1";
       drop.style.transform =
         `translate3d(${lx - D / 2}px, ${ly - D / 2}px, 0) rotate(${ang}deg) ` +
         `scale(${(s * along * (2 - z) * (1 + breathe)).toFixed(4)}, ${(s * across * z * (1 - breathe)).toFixed(4)}) rotate(${-ang}deg)`;
@@ -163,8 +165,7 @@ export default function DropCursor() {
       const act = el?.closest?.(ACTIONABLE) as HTMLElement | null;
       let t = REST;
       if (act) {
-        const r = act.getBoundingClientRect();
-        t = Math.max(44, Math.min(D, r.height * 1.25));
+        t = 0;                                     // over anything clickable the lens drains away for the normal hand pointer
       } else if (el && el.matches?.(TEXTY) && el.textContent?.trim()) {
         const fs = parseFloat(getComputedStyle(el).fontSize) || 16;
         t = Math.max(REST, Math.min(56, fs * 1.15));
