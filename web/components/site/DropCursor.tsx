@@ -12,9 +12,15 @@ import { useEffect, useRef } from "react";
  * browsers get the same clear shapes without bending. Mouse and trackpad only.
  */
 
-const INTERACTIVE = "a, button, [role='button'], input, select, label, summary, .build__stage";
-const D = 64;                                     // drop diameter
-const AW = 32, AH = 44;                           // arrow box
+// only things that do something when clicked: links, enabled buttons and controls
+const ACTIONABLE = [
+  "a[href]", "button:not(:disabled)", "[role='button']:not([aria-disabled='true'])", "summary", "select:not(:disabled)",
+  "input:is([type='checkbox'], [type='radio'], [type='range'], [type='submit'], [type='button']):not(:disabled)",
+  "label:has(input:is([type='checkbox'], [type='radio']):not(:disabled))",
+].join(", ");
+const D = 22;                                     // drop diameter: about the size of a normal pointer
+const AW = 32, AH = 44;                           // arrow box (drawn at 0.6×, a normal pointer size)
+const AS = 0.6;
 const TIP = 2;                                    // arrow tip sits at (2, 2) in its box
 const ARROW = "M2 2L2 34L9.5 27L15 39.5L20.5 37L15 25L25 25Z";
 
@@ -130,7 +136,7 @@ export default function DropCursor() {
       vx *= Math.pow(0.85, dt / 16); vy *= Math.pow(0.85, dt / 16);
       const speed = Math.hypot(vx, vy);
       squash *= 0.84;
-      const st = reduce ? 0 : Math.min(0.22, speed * 0.12);
+      const st = reduce ? 0 : Math.min(0.16, speed * 0.08);
       if (speed > 0.02) ang = (Math.atan2(vy, vx) * 180) / Math.PI;
       sx += (1 + st - sx) * 0.3; sy += (1 - st * 0.6 - sy) * 0.3;
 
@@ -144,7 +150,7 @@ export default function DropCursor() {
       drop.style.opacity = String(1 - mc);
       drop.style.transform =
         `translate3d(${x - D / 2}px, ${y - D / 2}px, 0) rotate(${ang}deg) scale(${(sx * ds).toFixed(3)}, ${(sy * ds).toFixed(3)}) rotate(${-ang}deg)`;
-      const as = (0.45 + 0.55 * m) * (1 - squash * 0.12);
+      const as = AS * (0.45 + 0.55 * m) * (1 - squash * 0.12);
       arrow.style.opacity = String(mc);
       arrow.style.transform = `translate3d(${x - TIP}px, ${y - TIP}px, 0) scale(${as.toFixed(3)})`;
     };
@@ -155,7 +161,7 @@ export default function DropCursor() {
       if (shown) { vx = vx * 0.6 + ((e.clientX - x) / dt) * 0.4; vy = vy * 0.6 + ((e.clientY - y) / dt) * 0.4; }
       x = e.clientX; y = e.clientY;
       if (!shown) { shown = true; root.classList.add("drop-on"); }
-      target = (e.target as Element | null)?.closest?.(INTERACTIVE) ? 1 : 0;
+      target = (e.target as Element | null)?.closest?.(ACTIONABLE) ? 1 : 0;
     };
     const leave = (e: MouseEvent) => { if (!e.relatedTarget) { shown = false; root.classList.remove("drop-on"); } };
     const down = (e: PointerEvent) => {
