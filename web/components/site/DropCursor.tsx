@@ -6,8 +6,7 @@ import { useEffect, useRef } from "react";
  * The pointer is clear water.
  * - Normally it's a round drop that works as a lens: whatever is under it is magnified
  *   in the middle and bent around the rim (an SVG displacement map in backdrop-filter).
- * - Over anything clickable the drop pulls into the shape of a normal arrow pointer,
- *   still made of clear water, still bending what's under its edges.
+ * - Over anything clickable it shrinks away and the normal pointer takes over.
  * It wobbles with movement and ripples on click. Chromium gets the refraction; other
  * browsers get the same clear shapes without bending. Mouse and trackpad only.
  */
@@ -18,11 +17,7 @@ const ACTIONABLE = [
   "input:is([type='checkbox'], [type='radio'], [type='range'], [type='submit'], [type='button']):not(:disabled)",
   "label:has(input:is([type='checkbox'], [type='radio']):not(:disabled))",
 ].join(", ");
-const D = 22;                                     // drop diameter: about the size of a normal pointer
-const AW = 32, AH = 44;                           // arrow box (drawn at 0.6×, a normal pointer size)
-const AS = 0.6;
-const TIP = 2;                                    // arrow tip sits at (2, 2) in its box
-const ARROW = "M2 2L2 34L9.5 27L15 39.5L20.5 37L15 25L25 25Z";
+const D = 24;                                     // drop diameter: a little bigger than a normal pointer
 
 /** Round lens: sample towards the centre, gently in the middle and strongly at the rim. */
 function lensMap(size: number, scale: number) {
@@ -51,45 +46,6 @@ function lensMap(size: number, scale: number) {
   return c.toDataURL();
 }
 
-/** Any shape as thick glass: blur its mask, and bend inwards along the slope of the blur. */
-function shapeMap(w: number, h: number, path: string, bezel: number) {
-  const s = 4;                                    // work at 4× for a smooth rim
-  const W = w * s, H = h * s;
-  const c = document.createElement("canvas");
-  c.width = W; c.height = H;
-  const g = c.getContext("2d")!;
-  g.filter = `blur(${bezel * s}px)`;
-  g.scale(s, s);
-  g.fillStyle = "#fff";
-  g.fill(new Path2D(path));
-  const a = g.getImageData(0, 0, W, H).data;
-  const hard = document.createElement("canvas");
-  hard.width = W; hard.height = H;
-  const hg = hard.getContext("2d")!;
-  hg.scale(s, s); hg.fill(new Path2D(path));
-  const inside = hg.getImageData(0, 0, W, H).data;
-  const out = g.createImageData(W, H);
-  const at = (x: number, y: number) => a[(Math.min(H - 1, Math.max(0, y)) * W + Math.min(W - 1, Math.max(0, x))) * 4 + 3] / 255;
-  for (let y = 0; y < H; y++) {
-    for (let x = 0; x < W; x++) {
-      const k = (y * W + x) * 4;
-      let ox = 0, oy = 0;
-      if (inside[k + 3] > 0) {
-        const gx = at(x + 2, y) - at(x - 2, y), gy = at(x, y + 2) - at(x, y - 2);
-        ox = gx * 2.2; oy = gy * 2.2;               // slope points inwards: sample from inside
-      }
-      out.data[k] = 128 + 127 * Math.max(-1, Math.min(1, ox));
-      out.data[k + 1] = 128 + 127 * Math.max(-1, Math.min(1, oy));
-      out.data[k + 2] = 128;
-      out.data[k + 3] = 255;
-    }
-  }
-  const o = document.createElement("canvas");
-  o.width = W; o.height = H;
-  o.getContext("2d")!.putImageData(out, 0, 0);
-  return o.toDataURL();
-}
-
 function filterMarkup(id: string, w: number, h: number, href: string, scale: number) {
   return `<filter id="${id}" filterUnits="userSpaceOnUse" x="0" y="0" width="${w}" height="${h}" color-interpolation-filters="sRGB">` +
     `<feImage href="${href}" x="0" y="0" width="${w}" height="${h}" preserveAspectRatio="none" result="map"/>` +
@@ -99,12 +55,11 @@ function filterMarkup(id: string, w: number, h: number, href: string, scale: num
 
 export default function DropCursor() {
   const dropRef = useRef<HTMLDivElement>(null);
-  const arrowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!matchMedia("(pointer: fine)").matches || !dropRef.current || !arrowRef.current) return;
+    if (!matchMedia("(pointer: fine)").matches || !dropRef.current) return;
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const drop = dropRef.current, arrow = arrowRef.current;
+    const drop = dropRef.current;
     const root = document.documentElement;
     root.classList.add("has-drop");
 
@@ -118,41 +73,72 @@ export default function DropCursor() {
       svg.setAttribute("width", "0"); svg.setAttribute("height", "0");
       svg.style.position = "absolute";
       svg.innerHTML =
-        filterMarkup("drop-lens", D, D, lensMap(D, D * 1.1), D * 1.1) +
-        filterMarkup("arrow-lens", AW, AH, shapeMap(AW, AH, ARROW, 2.4), 22);
+        filterMarkup("drop-lens", D, D, lensMap(D, D * 1.1), D * 1.1);
       document.body.appendChild(svg);
-      drop.classList.add("is-lens"); arrow.classList.add("is-lens");
+      drop.classList.add("is-lens");
     }
 
     let x = -200, y = -200, vx = 0, vy = 0, lastT = performance.now();
-    let sx = 1, sy = 1, ang = 0, squash = 0;
-    let m = 0, mv = 0, target = 0;                 // 0 = round drop, 1 = water arrow (spring)
-    let shown = false, raf = 0;
+    // the drop's shape is a little spring: it stretches along the movement, overshoots,
+    // and jiggles back to round when you stop; a click squashes it like jelly
+    let dx = 0, dy = 0, dvx = 0, dvy = 0;          // deformation and its velocity
+    let z = 1, zv = 0;                             // click squash
+    let m = 0, mv = 0, target = 0;                 // 0 = drop showing, 1 = hidden over a clickable thing (spring)
+    let shown = false, raf = 0, lastBit = 0, bits = 0;
+
+    const spawnBit = (bx: number, by: number, size: number) => {
+      if (bits > 14) return;
+      bits++;
+      const b = document.createElement("span");
+      b.className = "drop-bit";
+      b.style.cssText = `left:${bx}px;top:${by}px;width:${size}px;height:${size}px;margin:${-size / 2}px 0 0 ${-size / 2}px`;
+      document.body.appendChild(b);
+      setTimeout(() => { b.remove(); bits--; }, 520);
+    };
 
     const frame = () => {
       raf = requestAnimationFrame(frame);
       const now = performance.now(), dt = Math.min(50, now - lastT) || 16;
+      const f = dt / 16;
       lastT = now;
-      vx *= Math.pow(0.85, dt / 16); vy *= Math.pow(0.85, dt / 16);
-      const speed = Math.hypot(vx, vy);
-      squash *= 0.84;
-      const st = reduce ? 0 : Math.min(0.16, speed * 0.08);
-      if (speed > 0.02) ang = (Math.atan2(vy, vx) * 180) / Math.PI;
-      sx += (1 + st - sx) * 0.3; sy += (1 - st * 0.6 - sy) * 0.3;
+      vx *= Math.pow(0.82, f); vy *= Math.pow(0.82, f);
+      const speed = Math.hypot(vx, vy);            // px per ms
+
+      if (!reduce) {
+        // stretch target follows the velocity, capped
+        let tx = vx * 0.16, ty = vy * 0.16;
+        const tm = Math.hypot(tx, ty);
+        if (tm > 0.55) { tx *= 0.55 / tm; ty *= 0.55 / tm; }
+        dvx += (tx - dx) * 0.2 * f; dvy += (ty - dy) * 0.2 * f;
+        dvx *= Math.pow(0.8, f); dvy *= Math.pow(0.8, f);
+        dx += dvx * f; dy += dvy * f;
+        zv += (1 - z) * 0.24 * f; zv *= Math.pow(0.76, f); z += zv * f;
+
+        // fast flicks shed a few tiny droplets behind it
+        if (speed > 0.9 && now - lastBit > 38 && target === 0 && m < 0.2) {
+          lastBit = now;
+          const back = 8 + Math.random() * 6;
+          const n = Math.hypot(vx, vy) || 1;
+          spawnBit(x - (vx / n) * back + (Math.random() - 0.5) * 6, y - (vy / n) * back + (Math.random() - 0.5) * 6, 3 + Math.random() * 4);
+        }
+      }
 
       // springy morph, so the water overshoots a little as it changes shape
       if (reduce) m = target;
       else { mv += (target - m) * 0.22; mv *= 0.68; m += mv; }
       const mc = Math.min(1, Math.max(0, m));
 
-      // the drop shrinks into the tip as the arrow grows out of it
-      const ds = (1 - squash * 0.18) * (1 - 0.75 * mc);
+      // shape: long along the deformation, thinner across it, squashed flat by a click
+      const mag = Math.hypot(dx, dy);
+      const ang = (Math.atan2(dy, dx) * 180) / Math.PI;
+      const along = 1 + mag, across = 1 / Math.sqrt(1 + mag * 1.6);
+      const breathe = reduce ? 0 : Math.sin(now / 420) * 0.025;
+      const ds = 1 - mc;                           // over clickable things the drop shrinks away for the normal pointer
+      const lagX = -dx * 5, lagY = -dy * 5;        // the body trails a touch behind the tip of the move
       drop.style.opacity = String(1 - mc);
       drop.style.transform =
-        `translate3d(${x - D / 2}px, ${y - D / 2}px, 0) rotate(${ang}deg) scale(${(sx * ds).toFixed(3)}, ${(sy * ds).toFixed(3)}) rotate(${-ang}deg)`;
-      const as = AS * (0.45 + 0.55 * m) * (1 - squash * 0.12);
-      arrow.style.opacity = String(mc);
-      arrow.style.transform = `translate3d(${x - TIP}px, ${y - TIP}px, 0) scale(${as.toFixed(3)})`;
+        `translate3d(${x - D / 2 + lagX}px, ${y - D / 2 + lagY}px, 0) rotate(${ang}deg) ` +
+        `scale(${(along * ds * (2 - z) * (1 + breathe)).toFixed(3)}, ${(across * ds * z * (1 - breathe)).toFixed(3)}) rotate(${-ang}deg)`;
     };
 
     const move = (e: PointerEvent) => {
@@ -161,52 +147,37 @@ export default function DropCursor() {
       if (shown) { vx = vx * 0.6 + ((e.clientX - x) / dt) * 0.4; vy = vy * 0.6 + ((e.clientY - y) / dt) * 0.4; }
       x = e.clientX; y = e.clientY;
       if (!shown) { shown = true; root.classList.add("drop-on"); }
-      target = (e.target as Element | null)?.closest?.(ACTIONABLE) ? 1 : 0;
+      const t = (e.target as Element | null)?.closest?.(ACTIONABLE) ? 1 : 0;
+      if (t !== target && !reduce && t === 0) zv -= 0.12;   // a little wobble as it comes back
+      target = t;
     };
     const leave = (e: MouseEvent) => { if (!e.relatedTarget) { shown = false; root.classList.remove("drop-on"); } };
     const down = (e: PointerEvent) => {
-      if (e.pointerType === "touch") return;
-      squash = 1;
-      if (reduce) return;
+      if (e.pointerType === "touch" || reduce) return;
+      zv -= 0.32;
       const r = document.createElement("span");
       r.className = "drop-ripple";
       r.style.left = `${e.clientX}px`; r.style.top = `${e.clientY}px`;
       document.body.appendChild(r);
       setTimeout(() => r.remove(), 700);
     };
+    const up = () => { if (!reduce) zv += 0.12; };
 
     addEventListener("pointermove", move, { passive: true });
     addEventListener("pointerdown", down, { passive: true });
+    addEventListener("pointerup", up, { passive: true });
     document.addEventListener("mouseout", leave);
     raf = requestAnimationFrame(frame);
     return () => {
       cancelAnimationFrame(raf);
       removeEventListener("pointermove", move);
       removeEventListener("pointerdown", down);
+      removeEventListener("pointerup", up);
       document.removeEventListener("mouseout", leave);
       svg?.remove();
       root.classList.remove("has-drop", "drop-on");
     };
   }, []);
 
-  return (
-    <>
-      <div className="drop" ref={dropRef} aria-hidden />
-      <div className="water-arrow" ref={arrowRef} aria-hidden>
-        <svg viewBox={`0 0 ${AW} ${AH}`} width={AW} height={AH}>
-          <defs>
-            <linearGradient id="wa-sheen" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stopColor="#fff" stopOpacity=".55" />
-              <stop offset=".45" stopColor="#fff" stopOpacity="0" />
-              <stop offset="1" stopColor="#bfeaff" stopOpacity=".25" />
-            </linearGradient>
-          </defs>
-          <path d={ARROW} fill="url(#wa-sheen)" />
-          <path d={ARROW} fill="none" stroke="#fff" strokeOpacity=".9" strokeWidth="1.6" strokeLinejoin="round" />
-          <path d={ARROW} fill="none" stroke="#08131f" strokeOpacity=".55" strokeWidth=".8" strokeLinejoin="round" transform="translate(-.15 -.1)" />
-          <ellipse cx="5.6" cy="13" rx="1.4" ry="5.5" fill="#fff" fillOpacity=".85" />
-        </svg>
-      </div>
-    </>
-  );
+  return <div className="drop" ref={dropRef} aria-hidden />;
 }
