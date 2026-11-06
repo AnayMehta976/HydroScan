@@ -8,6 +8,8 @@ import Vial from "@/components/site/Vial";
 import ScanSim from "@/components/site/ScanSim";
 import LoupePhoto from "@/components/site/LoupePhoto";
 import Build from "@/components/site/Build";
+import LiquidGlass from "@/components/site/LiquidGlass";
+import DropCursor from "@/components/site/DropCursor";
 import {
   links, foundIn, comparison, steps, pipeline, levels, modelStats, modelClasses,
   features, bom, validation, users, business, team,
@@ -47,6 +49,8 @@ export default function Home() {
       <FieldCanvas />
       <Nav />
       <Choreo />
+      <LiquidGlass />
+      <DropCursor />
 
       <main id="main">
         {/* ================= HERO: the lens ================= */}
